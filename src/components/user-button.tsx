@@ -25,7 +25,7 @@ const UserButton = () => {
   };
 
   const { data: session, status } = useSession();
-  console.log(session);
+
   if (status === "loading") {
     return <Loader className="size-6 mr-4 mt-4 float-right animate-spin" />;
   }
@@ -62,16 +62,22 @@ const UserButton = () => {
             >
               <span className="block px-4 py-2 text-sm text-gray-700 font-medium">
                 Xin chào {session.user?.name} (
-                {session.user?.email == "thainguyen4646@gmail.com"
-                  ? "admin"
-                  : "user"}
-                )
+                {session.user.role === "user" ? "user" : "admin"})
               </span>
-              <Link href="/profile">
-                <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
-                  Profile
-                </DropdownMenuItem>
-              </Link>
+              {session.user.role === "user" ? (
+                <Link href="/profile">
+                  <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                    Profile
+                  </DropdownMenuItem>
+                </Link>
+              ) : (
+                <Link href="/admin/allprofile">
+                  <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                    All Profile
+                  </DropdownMenuItem>
+                </Link>
+              )}
+
               <DropdownMenuItem
                 className="h-10 px-4 py-2 text-sm hover:bg-red-50 text-red-600 rounded transition-colors cursor-pointer"
                 onClick={() => handleSignOut()}

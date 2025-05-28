@@ -54,7 +54,20 @@ const handler = NextAuth({
             role:
               profile?.email === "thainguyen4646@gmail.com" ? "admin" : "user",
           });
+        } else if (!existingUser.role) {
+          await User.updateOne(
+            { email: profile?.email },
+            {
+              $set: {
+                role:
+                  profile?.email === "thainguyen4646@gmail.com"
+                    ? "admin"
+                    : "user",
+              },
+            }
+          );
         }
+        return true;
       }
       return true;
     },
