@@ -8,7 +8,7 @@ import { CiSearch } from "react-icons/ci";
 
 const Header = () => {
   return (
-    <div>
+    <div className="mb-20">
       <div className="bg-black h-12 flex items-center justify-center">
         <p className="text-white ">
           Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
@@ -47,9 +47,7 @@ const Header = () => {
             <CiSearch className="size-6s absolute right-2.5" />
           </div>
           <div className="flex items-center justify-end px-10">
-            <SessionProvider>
-              <UserButton />
-            </SessionProvider>
+            <UserButton />
           </div>
         </div>
       </div>

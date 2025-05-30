@@ -1,6 +1,5 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,11 +70,18 @@ const UserButton = () => {
                   </DropdownMenuItem>
                 </Link>
               ) : (
-                <Link href="/admin/allprofile">
-                  <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
-                    All Profile
-                  </DropdownMenuItem>
-                </Link>
+                <>
+                  <Link href="/admin/allprofile">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      All Profile
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/admin/product">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Product
+                    </DropdownMenuItem>
+                  </Link>
+                </>
               )}
 
               <DropdownMenuItem
