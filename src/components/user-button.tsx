@@ -89,12 +89,12 @@ const UserButton = () => {
         </div>
       ) : (
         <div className="flex justify-end p-4 gap-4">
-          <Button>
-            <Link href="sign-in">Sign in</Link>
-          </Button>
-          <Button>
-            <Link href="sign-up">Sign up</Link>
-          </Button>
+          <Link href="sign-in" className="hover:underline">
+            Sign in
+          </Link>
+          <Link href="sign-up" className="hover:underline">
+            Sign up
+          </Link>
         </div>
       )}
     </nav>

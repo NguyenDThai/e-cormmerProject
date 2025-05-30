@@ -70,9 +70,11 @@ const SignUp = () => {
     <div className="h-full flex items-center justify-center bg-[#1b0918]">
       <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
         <CardHeader>
-          <CardTitle className="text-center">Sign Up</CardTitle>
+          <CardTitle className="text-center text-2xl font-semibold">
+            Sign Up
+          </CardTitle>
           <CardDescription className="text-sm text-center text-accent-foreground">
-            Usee email or sevice, to create account
+            Use email or sevice, to create account
           </CardDescription>
         </CardHeader>
         {!!error && (
@@ -144,7 +146,7 @@ const SignUp = () => {
               <FaGithub className="size-8 left-2.5 top-2.5" />
             </Button>
           </div>
-          <p className="text-center text-sm mt-2 text-muted-foreground">
+          <p className="text-center text-sm mt-3 text-muted-foreground ">
             Already have an account?
             <Link
               href="/sign-in"

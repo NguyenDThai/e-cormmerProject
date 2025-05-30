@@ -30,10 +30,10 @@ const Header = () => {
           <div className="">
             <ul className="flex gap-12">
               <Link href="/">
-                <li>Home</li>
+                <li className="hover:underline">Home</li>
               </Link>
-              <li>Contact</li>
-              <li>About</li>
+              <li className="hover:underline">Contact</li>
+              <li className="hover:underline">About</li>
             </ul>
           </div>
         </div>

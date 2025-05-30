@@ -17,6 +17,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { TriangleAlert } from "lucide-react";
+import Image from "next/image";
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -56,10 +57,21 @@ const SignIn = () => {
   };
 
   return (
-    <div className="h-full flex items-center justify-center bg-[#1b0918]">
-      <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
+    <div className="h-full flex items-center justify-center gap-[130px] bg-white">
+      <div>
+        <Image
+          src="/authlogo1.png"
+          alt="logoauth"
+          width={400}
+          height={400}
+          className="w-[800px] object-cover"
+        />
+      </div>
+      <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8 shadow-none border-none">
         <CardHeader>
-          <CardTitle className="text-center">Sign In</CardTitle>
+          <CardTitle className="text-center text-2xl font-semibold">
+            Sign In
+          </CardTitle>
           <CardDescription className="text-sm text-center text-accent-foreground">
             Usee email or sevice, to sign in
           </CardDescription>
@@ -74,6 +86,7 @@ const SignIn = () => {
           <form onSubmit={handleSubmit} className="space-y-3">
             <Input
               type="email"
+              className="shadow-none  border-t-0 border-x-0 rounded-none outline-none border-b-slate-400 border-b-1"
               disabled={pending}
               placeholder="Enter your Email"
               value={email}
@@ -83,6 +96,7 @@ const SignIn = () => {
             <Input
               type="password"
               disabled={pending}
+              className=" shadow-none border-t-0 border-x-0 rounded-none outline-none border-b-slate-400 border-b-1"
               placeholder="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -115,7 +129,7 @@ const SignIn = () => {
               <FaGithub className="size-8 left-2.5 top-2.5" />
             </Button>
           </div>
-          <p className="text-center text-sm mt-2 text-muted-foreground">
+          <p className="text-center text-sm mt-3 text-muted-foreground">
             Create new account {""}
             <Link
               href="/sign-up"
