@@ -10,8 +10,6 @@ import { Loader } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FaRegHeart } from "react-icons/fa";
-import { FaCartShopping } from "react-icons/fa6";
 
 const UserButton = () => {
   const route = useRouter();
@@ -30,6 +28,9 @@ const UserButton = () => {
   }
 
   const avatarFallback = session?.user?.name?.charAt(0).toUpperCase();
+
+  const role =
+    session?.user.email === "thainguyen4646@gmail.com" ? "admin" : "user";
 
   return (
     <nav>
@@ -55,10 +56,9 @@ const UserButton = () => {
               side="bottom"
             >
               <span className="block px-4 py-2 text-sm text-gray-700 font-medium">
-                Xin chào {session.user?.name} (
-                {session.user.role === "user" ? "user" : "admin"})
+                Xin chào {session.user?.name} ({role})
               </span>
-              {session.user.role === "user" ? (
+              {role === "user" ? (
                 <Link href="/profile">
                   <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
                     Profile

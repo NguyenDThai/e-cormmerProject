@@ -19,7 +19,6 @@ const Profile = () => {
       try {
         const responese = await fetch("/api/profile");
         const data = await responese.json();
-        console.log(data);
         if (responese.ok) {
           setUser(data.users);
         } else {

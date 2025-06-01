@@ -4,6 +4,7 @@ import connectToDatabase from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 
 const handler = NextAuth({
   session: {
@@ -13,6 +14,10 @@ const handler = NextAuth({
     GitHub({
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET_KEY as string,
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
 
     CredentialsProvider({
@@ -44,25 +49,25 @@ const handler = NextAuth({
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      if (account?.provider === "github") {
+      if (account?.provider === "github" || account?.provider === "google") {
         await connectToDatabase();
-        const existingUser = await User.findOne({ email: profile?.email });
+        const email = profile?.email;
+        if (!email) {
+          return false;
+        }
+        const existingUser = await User.findOne({ email });
         if (!existingUser) {
           await User.create({
             name: profile?.name,
-            email: profile?.email,
-            role:
-              profile?.email === "thainguyen4646@gmail.com" ? "admin" : "user",
+            email,
+            role: email === "thainguyen4646@gmail.com" ? "admin" : "user",
           });
         } else if (!existingUser.role) {
           await User.updateOne(
-            { email: profile?.email },
+            { email },
             {
               $set: {
-                role:
-                  profile?.email === "thainguyen4646@gmail.com"
-                    ? "admin"
-                    : "user",
+                role: email === "thainguyen4646@gmail.com" ? "admin" : "user",
               },
             }
           );
