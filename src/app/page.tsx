@@ -1,5 +1,6 @@
 import Banner from "@/components/Banner";
 import ProductFeatured from "@/components/ProductFeatured";
+import CategoriesList from "@/components/CategoriesList";
 
 export default function Home() {
   return (
@@ -17,21 +18,20 @@ export default function Home() {
             <ProductFeatured />
           </section>
 
-          {/* Call to Action */}
-          <section className="bg-blue-600 text-white rounded-xl p-8 mb-16">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
-              <p className="text-xl mb-6">
-                Join thousands of satisfied customers today.
-              </p>
-              <button className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition duration-300">
-                Sign Up Now
-              </button>
+          {/* categories */}
+          <section>
+            <div className="flex items-center">
+              <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
+              <p className="text-lg text-blue-500 ml-4">Danh sach san pham</p>
             </div>
+            <h2 className="text-4xl font-semibold mt-5">
+              Theo thể loại sản phẩm
+            </h2>
+            <CategoriesList />
           </section>
 
           {/* Testimonials */}
-          <section>
+          {/* <section>
             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
               What Our Customers Say
             </h2>
@@ -54,7 +54,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </section>
+          </section> */}
         </div>
       </main>
     </div>

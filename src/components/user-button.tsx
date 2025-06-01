@@ -35,11 +35,6 @@ const UserButton = () => {
     <nav>
       {session ? (
         <div className="flex items-center">
-          {/* gio hang */}
-          <div className="flex items-center gap-4">
-            <FaRegHeart className="size-5" />
-            <FaCartShopping className="size-5" />
-          </div>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="outline-none relative float-right p-4 md:p-8">
               <div className="flex gap-4 items-center">

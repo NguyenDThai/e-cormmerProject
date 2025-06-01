@@ -30,12 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen `}
       >
         <ClientSessionProvider>
           <Toaster position="top-center" richColors />
           <Header />
-          {children}
+          <div>{children}</div>
           <Footer />
         </ClientSessionProvider>
       </body>

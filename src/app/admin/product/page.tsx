@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const ProductPage = () => {
   return (
-    <div>
+    <div className="h-screen">
       <h1>Danh sach san pham</h1>
       <Link href="/admin/product/add-product">
         <Button>Them san pham</Button>

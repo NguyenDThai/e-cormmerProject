@@ -5,7 +5,7 @@ const productSchema = new mongoose.Schema({
   brand: { type: String, required: true },
   category: {
     type: String,
-    enum: ["phone", "laptop", "airport", "gaming", "mouse"],
+    enum: ["phone", "laptop", "airport", "gaming", "mouse", "camera", "other"],
     required: true,
   },
   image: { type: String, required: true },

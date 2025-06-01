@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/product";
 import { v2 as cloudinary } from "cloudinary";
@@ -39,7 +38,15 @@ export async function POST(request: Request) {
     }
 
     // Kiem tra loai san pham neu khong co trong list thi se bao loi
-    const validCategories = ["phone", "laptop", "airport", "gaming", "mouse"];
+    const validCategories = [
+      "phone",
+      "laptop",
+      "airport",
+      "gaming",
+      "mouse",
+      "camera",
+      "other",
+    ];
     if (!validCategories.includes(category)) {
       return NextResponse.json({ error: "Invalid category" }, { status: 400 });
     }

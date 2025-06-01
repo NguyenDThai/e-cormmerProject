@@ -96,7 +96,7 @@ const AddProductForm = () => {
 
   return (
     <div className="container mx-auto max-w-[700px] p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Add New Product</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">Thêm sản phẩm mới</h1>
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded-lg p-6 "
@@ -136,6 +136,7 @@ const AddProductForm = () => {
             <option value="laptop">Laptop</option>
             <option value="airpod">Airpod</option>
             <option value="mouse">Mouse</option>
+            <option value="camera">Camera</option>
             <option value="other">Other</option>
           </select>
         </div>
@@ -215,7 +216,7 @@ const AddProductForm = () => {
           className="bg-blue-500 text-white rounded p-2 w-full"
           disabled={loading}
         >
-          {loading ? "Uploading..." : "Add Product"}
+          {loading ? "Uploading..." : "Thêm sản phẩm"}
         </button>
       </form>
     </div>
