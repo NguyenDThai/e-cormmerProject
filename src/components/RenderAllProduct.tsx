@@ -5,7 +5,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { CiHeart } from "react-icons/ci";
 
-type ProductList = [
+export type ProductList = [
   {
     _id: string;
     name: string;
@@ -34,7 +34,6 @@ const RenderAllProduct = () => {
     fetchProductList();
   }, []);
 
-  console.log(productList);
   return (
     <div className="container mx-auto px-4 py-8 ">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -53,7 +52,7 @@ const RenderAllProduct = () => {
                 alt={product?.name}
                 width={200}
                 height={200}
-                className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-contain bg-transparent transition-transform duration-300 group-hover:scale-105"
               />
             </div>
 

@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const AddProductForm = () => {
   const { data: session, status } = useSession();
@@ -63,8 +64,8 @@ const AddProductForm = () => {
         throw new Error(dataError.error || "Failed to upload product");
       }
 
-      const result = await response.json();
-      console.log(result);
+      await response.json();
+      toast.success("Đã thêm sản phẩm thành công");
       route.push("/admin/product");
     } catch (error) {
       setError((error as Error).message);

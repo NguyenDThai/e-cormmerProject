@@ -52,13 +52,13 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold mb-4">Contact Us</h3>
             <address className="text-gray-400 not-italic">
-              123 Street Name
+              Ninh Kieu
               <br />
-              City, State 12345
+              Can Tho City
               <br />
-              Email: info@example.com
+              Email: thainguyen464@gmail.com
               <br />
-              Phone: (123) 456-7890
+              Phone: 0869240149
             </address>
           </div>
           <div>
@@ -80,8 +80,7 @@ const Footer = () => {
         </div>
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
           <p>
-            &copy; {new Date().getFullYear()} Your Company Name. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} Thai Dev. All rights reserved.
           </p>
         </div>
       </div>

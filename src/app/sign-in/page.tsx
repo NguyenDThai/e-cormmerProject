@@ -37,7 +37,7 @@ const SignIn = () => {
 
     if (res?.ok) {
       route.push("/");
-      toast.success("login success");
+      toast.success("Đăng nhập thàng công");
     } else if (res?.status === 401) {
       setError("Invalid Credentials");
       setPending(false);
