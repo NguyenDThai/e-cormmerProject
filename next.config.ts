@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
         hostname: "img.freepik.coms",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+      },
     ],
   },
 };

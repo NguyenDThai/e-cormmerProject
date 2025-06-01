@@ -37,7 +37,7 @@ const ProductFeatured = () => {
       {/* Container sản phẩm */}
       <div
         ref={scrollContainerRef}
-        className="grid grid-flow-col auto-cols-[minmax(300px,1fr)] gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory py-4 px-2"
+        className="grid grid-flow-col auto-cols-[minmax(300px,1fr)] gap-8 overflow-x-hidden scrollbar-hide snap-x snap-mandatory py-4 px-2"
       >
         {[1, 2, 3, 4, 5, 6].map((item) => (
           <div

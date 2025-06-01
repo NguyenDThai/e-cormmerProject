@@ -7,7 +7,7 @@ import { CiHeart, CiSearch, CiShoppingCart } from "react-icons/ci";
 
 const Header = () => {
   return (
-    <div className="mb-20">
+    <div className="mb-6">
       {/* Top Banner */}
       <div className="bg-gradient-to-r bg-blue-600 h-12 flex items-center justify-center">
         <p className="text-white font-medium text-sm md:text-base tracking-wide flex items-center">

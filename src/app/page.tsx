@@ -1,6 +1,7 @@
 import Banner from "@/components/Banner";
 import ProductFeatured from "@/components/ProductFeatured";
 import CategoriesList from "@/components/CategoriesList";
+import RenderAllProduct from "@/components/RenderAllProduct";
 
 export default function Home() {
   return (
@@ -19,7 +20,7 @@ export default function Home() {
           </section>
 
           {/* categories */}
-          <section>
+          <section className="mb-16">
             <div className="flex items-center">
               <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
               <p className="text-lg text-blue-500 ml-4">Danh sach san pham</p>
@@ -28,6 +29,20 @@ export default function Home() {
               Theo thể loại sản phẩm
             </h2>
             <CategoriesList />
+          </section>
+
+          {/* San pham cua chung toi */}
+          <section>
+            <div className="flex items-center">
+              <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
+              <p className="text-lg text-blue-500 ml-4">
+                Sản phẩm của chúng tôi
+              </p>
+            </div>
+            <h2 className="text-4xl font-semibold mt-5">
+              Khám phá sản phẩm của chúng tôi
+            </h2>
+            <RenderAllProduct />
           </section>
 
           {/* Testimonials */}

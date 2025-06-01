@@ -53,7 +53,7 @@ const AddProductForm = () => {
     if (formData.salePrice) data.append("salePrice", formData.salePrice);
     if (formData.image) data.append("image", formData.image);
     try {
-      const response = await fetch("/api/product", {
+      const response = await fetch("/api/product/add-product", {
         method: "post",
         body: data,
       });
@@ -134,8 +134,9 @@ const AddProductForm = () => {
           >
             <option value="phone">Phone</option>
             <option value="laptop">Laptop</option>
-            <option value="airpod">Airpod</option>
+            <option value="airport">Airport</option>
             <option value="mouse">Mouse</option>
+            <option value="gaming">Gaming</option>
             <option value="camera">Camera</option>
             <option value="other">Other</option>
           </select>

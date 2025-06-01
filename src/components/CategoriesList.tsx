@@ -1,10 +1,32 @@
 "use client";
+import { useEffect, useState } from "react";
 import { FaCamera, FaHeadphones, FaMouse } from "react-icons/fa";
 import { IoIosMore } from "react-icons/io";
 import { IoGameController } from "react-icons/io5";
 import { MdOutlineComputer, MdOutlinePhoneAndroid } from "react-icons/md";
 
 const CategoriesList = () => {
+  // const [productList, setProductList] = useState([]);
+
+  // useEffect(() => {
+  //   const fetchProductList = async () => {
+  //     try {
+  //       const response = await fetch("/api/product");
+  //       const dataProduct = await response.json();
+  //       if (!response.ok) {
+  //         throw new Error("Da co loi xay ra khi lay san pham tu csdl");
+  //       }
+  //       setProductList(dataProduct.product);
+  //     } catch (error) {
+  //       console.error(error.message);
+  //     }
+  //   };
+
+  //   fetchProductList();
+  // }, []);
+
+  // console.log(productList);
+
   return (
     <div className="flex justify-between mt-14">
       <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
