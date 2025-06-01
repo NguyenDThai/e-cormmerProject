@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import Header from "@/components/Header";
 
 import ClientSessionProvider from "@/components/ClientSessionProvider";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +30,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <ClientSessionProvider>{children}</ClientSessionProvider>
+        <ClientSessionProvider>
+          <Toaster position="top-center" richColors />
+          <Header />
+          {children}
+          <Footer />
+        </ClientSessionProvider>
       </body>
     </html>
   );
