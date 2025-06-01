@@ -66,11 +66,11 @@ const RenderAllProduct = () => {
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center space-x-2">
                   <p className="text-red-500 font-bold text-lg">
-                    {product?.price} đ
+                    {product?.price.toLocaleString("vi-VN")} đ
                   </p>
                   {product?.salePrice && (
                     <p className="text-gray-400 text-sm line-through">
-                      {product.salePrice} đ
+                      {product.salePrice.toLocaleString("vi-VN")} đ
                     </p>
                   )}
                 </div>
