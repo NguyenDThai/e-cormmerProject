@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,12 +12,13 @@ type User = {
   avatar: string;
 };
 const Profile = () => {
-  const [user, setUser] = useState<User>({});
+  const [user, setUser] = useState<User | null>({});
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const responese = await fetch("/api/profile");
         const data = await responese.json();
+        console.log(data);
         if (responese.ok) {
           setUser(data.users);
         } else {
@@ -30,6 +30,8 @@ const Profile = () => {
     };
     fetchUser();
   }, []);
+
+  const role = user?.role === "thainguyen4646@gmail.com" ? "admin" : "user";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -53,17 +55,19 @@ const Profile = () => {
                 />
               ) : (
                 <span className="text-3xl text-gray-600">
-                  {user.name?.charAt(0).toUpperCase()}
+                  {user?.name?.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
           </div>
           <h2 className="text-xl font-semibold text-gray-800 mt-4">
-            {user.name}
+            {user?.name}
           </h2>
-          <span className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-sm font-medium mt-1">
-            {user.role}
-          </span>
+          {role === "admin" && (
+            <span className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-sm font-medium mt-1">
+              {user?.role}
+            </span>
+          )}
         </div>
 
         {/* Thông tin chi tiết */}
@@ -94,7 +98,7 @@ const Profile = () => {
                     Họ và tên:
                   </span>
                   <span className="text-gray-800 sm:flex-1 px-3 py-2 bg-white rounded-md border border-gray-200">
-                    {user.name || "Chưa cập nhật"}
+                    {user?.name || "Chưa cập nhật"}
                   </span>
                 </div>
 
@@ -103,7 +107,7 @@ const Profile = () => {
                     Email:
                   </span>
                   <span className="text-gray-800 sm:flex-1 px-3 py-2 bg-white rounded-md border border-gray-200">
-                    {user.email}
+                    {user?.email}
                   </span>
                 </div>
 
@@ -112,7 +116,7 @@ const Profile = () => {
                     Vai trò:
                   </span>
                   <span className="text-gray-800 sm:flex-1 px-3 py-2 bg-white rounded-md border border-gray-200">
-                    {user.role}
+                    {user?.role}
                   </span>
                 </div>
               </div>
