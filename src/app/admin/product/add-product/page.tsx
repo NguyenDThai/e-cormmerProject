@@ -247,55 +247,47 @@ const AddProductForm = () => {
           {formData.category !== "airport" && formData.category !== "mouse" && (
             <h2 className="text-lg font-semibold mb-2">Cấu hình sản phẩm</h2>
           )}
-          {["phone", "laptop", "airpod", "gaming", "mouse", "camera"].includes(
-            formData.category
-          ) && (
-            <>
-              {formData.category !== "mouse" && (
-                <>
-                  <div className="mb-2">
-                    <label className="block text-gray-700">RAM (GB)</label>
-                    <input
-                      type="number"
-                      name="config.ram"
-                      value={formData.configuration.ram}
-                      onChange={handleInputChange}
-                      className="w-full border rounded p-2"
-                      min="0"
-                    />
-                  </div>
-                  <div className="mb-2">
-                    <label className="block text-gray-700">Lưu trữ (GB)</label>
-                    <input
-                      type="number"
-                      name="config.storage"
-                      value={formData.configuration.storage}
-                      onChange={handleInputChange}
-                      className="w-full border rounded p-2"
-                      min="0"
-                    />
-                  </div>
-                  <div className="mb-2">
-                    <label className="block text-gray-700">
-                      Kích thước màn hình (inches)
-                    </label>
-                    <input
-                      type="number"
-                      name="config.screenSize"
-                      value={formData.configuration.screenSize}
-                      onChange={handleInputChange}
-                      className="w-full border rounded p-2"
-                      min="0"
-                      step="0.1"
-                    />
-                  </div>
-                </>
-              )}
-            </>
-          )}
+
           {/* Phone */}
           {formData.category === "phone" && (
             <>
+              <div className="mb-2">
+                <label className="block text-gray-700">RAM (GB)</label>
+                <input
+                  type="number"
+                  name="config.ram"
+                  value={formData.configuration.ram}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">Lưu trữ (GB)</label>
+                <input
+                  type="number"
+                  name="config.storage"
+                  value={formData.configuration.storage}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">
+                  Kích thước màn hình (inches)
+                </label>
+                <input
+                  type="number"
+                  name="config.screenSize"
+                  value={formData.configuration.screenSize}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+
               <div className="mb-2">
                 <label className="block text-gray-700">Pin (mAh)</label>
                 <input
@@ -322,6 +314,43 @@ const AddProductForm = () => {
           {/* laptop */}
           {formData.category === "laptop" && (
             <>
+              <div className="mb-2">
+                <label className="block text-gray-700">RAM (GB)</label>
+                <input
+                  type="number"
+                  name="config.ram"
+                  value={formData.configuration.ram}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">Lưu trữ (GB)</label>
+                <input
+                  type="number"
+                  name="config.storage"
+                  value={formData.configuration.storage}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">
+                  Kích thước màn hình (inches)
+                </label>
+                <input
+                  type="number"
+                  name="config.screenSize"
+                  value={formData.configuration.screenSize}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+
               <div className="mb-2">
                 <label className="block text-gray-700">CPU</label>
                 <input
@@ -361,6 +390,17 @@ const AddProductForm = () => {
                 />
               </div>
               <div className="mb-2">
+                <label className="block text-gray-700">Lưu trữ (GB)</label>
+                <input
+                  type="number"
+                  name="config.storage"
+                  value={formData.configuration.storage}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
                 <label className="block text-gray-700">Loại ống kính</label>
                 <input
                   type="text"
@@ -387,6 +427,29 @@ const AddProductForm = () => {
           {/* Thiết bị cơi game */}
           {formData.category === "gaming" && (
             <>
+              <div className="mb-2">
+                <label className="block text-gray-700">RAM (GB)</label>
+                <input
+                  type="number"
+                  name="config.ram"
+                  value={formData.configuration.ram}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">Lưu trữ (GB)</label>
+                <input
+                  type="number"
+                  name="config.storage"
+                  value={formData.configuration.storage}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+
               <div className="mb-2">
                 <label className="block text-gray-700">Loại thiết bị</label>
                 <input

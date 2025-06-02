@@ -16,7 +16,7 @@ const configurationSchema = new Schema({
 
   // Camera-specific
   sensorResolution: { type: Number, min: 0 }, // megapixels Độ phân giải cảm biến
-  lensType: { type: String }, //Loại ống kính
+  lensType: { type: String }, //Loại ống kính (Camera)
   videoResolution: { type: String }, //Độ phân giải video
 
   // Gaming-specific
