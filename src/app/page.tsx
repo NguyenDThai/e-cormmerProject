@@ -2,6 +2,7 @@ import Banner from "@/components/Banner";
 import ProductFeatured from "@/components/ProductFeatured";
 import CategoriesList from "@/components/CategoriesList";
 import RenderAllProduct from "@/components/RenderAllProduct";
+import Coundown from "@/components/Coundown";
 
 export default function Home() {
   return (
@@ -13,9 +14,16 @@ export default function Home() {
         <div className="container mx-auto px-4 py-12">
           {/* Featured Section */}
           <section className="mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-              Featured Products
-            </h2>
+            <div className="flex flex-col ">
+              <div className="flex items-center">
+                <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
+                <p className="text-lg text-blue-500 ml-4">Hôm nay</p>
+              </div>
+              <div className="flex items-center gap-10">
+                <h2 className="text-4xl font-semibold">Flash sale</h2>
+                <Coundown />
+              </div>
+            </div>
             <ProductFeatured />
           </section>
 

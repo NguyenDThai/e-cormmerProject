@@ -58,22 +58,51 @@ const UserButton = () => {
               <span className="block px-4 py-2 text-sm text-gray-700 font-medium">
                 Xin chào {session.user?.name} ({role})
               </span>
+              {/* chức năng cho user */}
               {role === "user" ? (
-                <Link href="/profile">
-                  <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
-                    Profile
-                  </DropdownMenuItem>
-                </Link>
+                <>
+                  <Link href="/profile">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Profile
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/profile">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Sản phẩm yêu thích
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/profile">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Đơn hàng
+                    </DropdownMenuItem>
+                  </Link>
+                </>
               ) : (
+                // Chức năng cho admin
                 <>
                   <Link href="/admin/allprofile">
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
-                      All Profile
+                      Tài khoản
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/admin/product">
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
-                      Product
+                      Sản Phẩm
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Đơn hàng
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Voucher
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Thống kê
                     </DropdownMenuItem>
                   </Link>
                 </>
@@ -83,7 +112,7 @@ const UserButton = () => {
                 className="h-10 px-4 py-2 text-sm hover:bg-red-50 text-red-600 rounded transition-colors cursor-pointer"
                 onClick={() => handleSignOut()}
               >
-                Log Out
+                Đăng xuất
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -91,10 +120,10 @@ const UserButton = () => {
       ) : (
         <div className="flex justify-end p-4 gap-4">
           <Link href="sign-in" className="hover:underline">
-            Sign in
+            Đăng Nhập
           </Link>
           <Link href="sign-up" className="hover:underline">
-            Sign up
+            Đăng ký
           </Link>
         </div>
       )}
