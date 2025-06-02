@@ -64,12 +64,18 @@ const RenderAllProduct = () => {
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center space-x-2">
-                  <p className="text-red-500 font-bold text-lg">
-                    {product?.price.toLocaleString("vi-VN")} đ
-                  </p>
-                  {product?.salePrice && (
-                    <p className="text-gray-400 text-sm line-through">
-                      {product.salePrice.toLocaleString("vi-VN")} đ
+                  {product?.salePrice ? (
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-red-500 font-bold text-lg">
+                        {product?.salePrice?.toLocaleString("vi-VN")} đ
+                      </p>
+                      <p className="text-gray-400 text-sm line-through ">
+                        {product?.price?.toLocaleString("vi-VN")} đ
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-red-500 font-bold text-lg">
+                      {product?.price?.toLocaleString("vi-VN")} đ
                     </p>
                   )}
                 </div>

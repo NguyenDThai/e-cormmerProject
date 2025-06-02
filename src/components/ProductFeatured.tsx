@@ -14,7 +14,6 @@ const ProductFeatured = () => {
       });
     }
   };
-
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
@@ -23,6 +22,7 @@ const ProductFeatured = () => {
       });
     }
   };
+
   return (
     <div className="relative ">
       {/* Nút mũi tên trái */}
