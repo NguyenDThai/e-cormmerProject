@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/product";
@@ -11,12 +12,40 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(request: Request) {
-  //   const session = await getServerSession();
-  //   if (!session || !session.user.email || session.user.role !== "admin") {
-  //     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  //   }
+export async function GET(request: Request) {
+  try {
+    await connectToDatabase();
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get("category");
+    const ram = searchParams.get("ram");
+    const storage = searchParams.get("storage");
 
+    const query: any = {};
+    if (category) query.category = category;
+    if (ram) query["configuration.ram"] = parseInt(ram);
+    if (storage) query["configuration.storage"] = parseInt(storage);
+
+    const product = await Product.find(query)
+      .select(
+        "name brand category image description price salePrice configuration"
+      )
+      .lean()
+      .limit(20);
+
+    const formattedProducts = product.map((product) => ({
+      ...product,
+    }));
+
+    return NextResponse.json({ products: formattedProducts }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch products" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
   try {
     await connectToDatabase();
     const formData = await request.formData();
@@ -29,6 +58,10 @@ export async function POST(request: Request) {
       ? parseFloat(formData.get("salePrice") as string)
       : undefined;
     const image = formData.get("image") as File;
+    // xu ly cau hinh
+    const configuration = formData.get("configuration")
+      ? JSON.parse(formData.get("configuration") as string)
+      : {};
 
     if (!name || !brand || !category || !price || !image) {
       return NextResponse.json(
@@ -70,6 +103,12 @@ export async function POST(request: Request) {
 
     const imageUrl = (uploadResult as any).secure_url;
 
+    // Loai bo cac truong trong
+    const cleanedConfiguration = Object.fromEntries(
+      Object.entries(configuration).filter(
+        ([_, v]) => v !== "" && v !== null && v !== undefined
+      )
+    );
     // tao san pham tren mongoDB
 
     const product = await Product.create({
@@ -80,6 +119,7 @@ export async function POST(request: Request) {
       price,
       description,
       salePrice,
+      configuration: cleanedConfiguration,
     });
 
     return NextResponse.json({ product }, { status: 201 });

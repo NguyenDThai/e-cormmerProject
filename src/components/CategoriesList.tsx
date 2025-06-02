@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState } from "react";
 import { FaCamera, FaHeadphones, FaMouse } from "react-icons/fa";
@@ -11,21 +13,19 @@ const CategoriesList = () => {
   // useEffect(() => {
   //   const fetchProductList = async () => {
   //     try {
-  //       const response = await fetch("/api/product");
+  //       const response = await fetch("/api/product/add-product");
   //       const dataProduct = await response.json();
   //       if (!response.ok) {
   //         throw new Error("Da co loi xay ra khi lay san pham tu csdl");
   //       }
-  //       setProductList(dataProduct.product);
-  //     } catch (error) {
+  //       setProductList(dataProduct.products);
+  //     } catch (error: any) {
   //       console.error(error.message);
   //     }
   //   };
 
   //   fetchProductList();
   // }, []);
-
-  // console.log(productList);
 
   return (
     <div className="flex justify-between mt-14">

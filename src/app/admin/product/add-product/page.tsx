@@ -1,14 +1,11 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const AddProductForm = () => {
-  const { data: session, status } = useSession();
-
   const route = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,6 +19,21 @@ const AddProductForm = () => {
     price: "",
     description: "",
     salePrice: "",
+    configuration: {
+      ram: "",
+      storage: "",
+      screenSize: "",
+      battery: "",
+      processor: "",
+      cpu: "",
+      gpu: "",
+      sensorResolution: "",
+      lensType: "",
+      videoResolution: "",
+      type: "",
+      features: [] as string[],
+      custom: {} as Record<string, string>,
+    },
     image: null as File | null,
   });
 
@@ -53,6 +65,8 @@ const AddProductForm = () => {
     data.append("description", formData.description);
     if (formData.salePrice) data.append("salePrice", formData.salePrice);
     if (formData.image) data.append("image", formData.image);
+    data.append("configuration", JSON.stringify(formData.configuration));
+
     try {
       const response = await fetch("/api/product/add-product", {
         method: "post",
@@ -80,7 +94,15 @@ const AddProductForm = () => {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name.startsWith("config.")) {
+      const configField = name.replace("config.", "");
+      setFormData((prev) => ({
+        ...prev,
+        configuration: { ...prev.configuration, [configField]: value },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,9 +113,16 @@ const AddProductForm = () => {
     }
   };
 
-  if (status === "loading") {
-    return <div className="container mx-auto p-4">Loading...</div>;
-  }
+  const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const features = e.target.value
+      .split(",")
+      .map((f) => f.trim())
+      .filter((f) => f);
+    setFormData((prev) => ({
+      ...prev,
+      configuration: { ...prev.configuration, features },
+    }));
+  };
 
   return (
     <div className="container mx-auto max-w-[700px] p-4">
@@ -210,6 +239,175 @@ const AddProductForm = () => {
                 Xoa
               </Button>
             </div>
+          )}
+        </div>
+
+        {/* config */}
+        <div className="mb-4">
+          {formData.category !== "airport" && formData.category !== "mouse" && (
+            <h2 className="text-lg font-semibold mb-2">Cấu hình sản phẩm</h2>
+          )}
+          {["phone", "laptop", "airpod", "gaming", "mouse", "camera"].includes(
+            formData.category
+          ) && (
+            <>
+              {formData.category !== "mouse" && (
+                <>
+                  <div className="mb-2">
+                    <label className="block text-gray-700">RAM (GB)</label>
+                    <input
+                      type="number"
+                      name="config.ram"
+                      value={formData.configuration.ram}
+                      onChange={handleInputChange}
+                      className="w-full border rounded p-2"
+                      min="0"
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-gray-700">Lưu trữ (GB)</label>
+                    <input
+                      type="number"
+                      name="config.storage"
+                      value={formData.configuration.storage}
+                      onChange={handleInputChange}
+                      className="w-full border rounded p-2"
+                      min="0"
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-gray-700">
+                      Kích thước màn hình (inches)
+                    </label>
+                    <input
+                      type="number"
+                      name="config.screenSize"
+                      value={formData.configuration.screenSize}
+                      onChange={handleInputChange}
+                      className="w-full border rounded p-2"
+                      min="0"
+                      step="0.1"
+                    />
+                  </div>
+                </>
+              )}
+            </>
+          )}
+          {/* Phone */}
+          {formData.category === "phone" && (
+            <>
+              <div className="mb-2">
+                <label className="block text-gray-700">Pin (mAh)</label>
+                <input
+                  type="number"
+                  name="config.battery"
+                  value={formData.configuration.battery}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">Bộ xử lý (chip)</label>
+                <input
+                  type="text"
+                  name="config.processor"
+                  value={formData.configuration.processor}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
+            </>
+          )}
+          {/* laptop */}
+          {formData.category === "laptop" && (
+            <>
+              <div className="mb-2">
+                <label className="block text-gray-700">CPU</label>
+                <input
+                  type="text"
+                  name="config.cpu"
+                  value={formData.configuration.cpu}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">GPU</label>
+                <input
+                  type="text"
+                  name="config.gpu"
+                  value={formData.configuration.gpu}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
+            </>
+          )}
+          {/* Camera */}
+          {formData.category === "camera" && (
+            <>
+              <div className="mb-2">
+                <label className="block text-gray-700">
+                  Độ phân giải cảm biến (MP)
+                </label>
+                <input
+                  type="number"
+                  name="config.sensorResolution"
+                  value={formData.configuration.sensorResolution}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                  min="0"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">Loại ống kính</label>
+                <input
+                  type="text"
+                  name="config.lensType"
+                  value={formData.configuration.lensType}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">
+                  Độ phân giải Video
+                </label>
+                <input
+                  type="text"
+                  name="config.videoResolution"
+                  value={formData.configuration.videoResolution}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
+            </>
+          )}
+          {/* Thiết bị cơi game */}
+          {formData.category === "gaming" && (
+            <>
+              <div className="mb-2">
+                <label className="block text-gray-700">Loại thiết bị</label>
+                <input
+                  type="text"
+                  name="config.type"
+                  value={formData.configuration.type}
+                  onChange={handleInputChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-gray-700">Tính Năng</label>
+                <input
+                  type="text"
+                  name="config.features"
+                  value={formData.configuration.features.join(", ")}
+                  onChange={handleFeaturesChange}
+                  className="w-full border rounded p-2"
+                />
+              </div>
+            </>
           )}
         </div>
         {error && <p className="text-red-500 mb-4">{error}</p>}

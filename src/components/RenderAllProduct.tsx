@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ShoppingCartIcon, StarIcon } from "lucide-react";
@@ -27,7 +28,7 @@ const RenderAllProduct = () => {
           throw new Error("Da co loi xay ra khi lay san pham tu csdl");
         }
         setProductList(dataProduct.product);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error.message);
       }
     };
