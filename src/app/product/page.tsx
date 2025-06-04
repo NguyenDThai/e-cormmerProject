@@ -1,47 +1,29 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
-import ButtonAddToCard from "@/components/ButtonAddToCard";
+import React from "react";
+import connectToDatabase from "@/lib/mongodb";
+import Product from "@/models/product";
 import { StarIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
 import { CiHeart } from "react-icons/ci";
+import Image from "next/image";
+import ButtonAddToCard from "@/components/ButtonAddToCard";
 
-export type ProductList = [
-  {
-    _id: string;
-    name: string;
-    image: string;
-    price: number;
-    salePrice: number;
-  }
-];
-
-const RenderAllProduct = () => {
-  const [productList, setProductList] = useState<ProductList | []>([]);
-
-  useEffect(() => {
-    const fetchProductList = async () => {
-      try {
-        const response = await fetch("/api/product");
-        const dataProduct = await response.json();
-
-        if (!response.ok) {
-          throw new Error("Da co loi xay ra khi lay san pham tu csdl");
-        }
-        setProductList(dataProduct.product);
-      } catch (error: any) {
-        console.error(error.message);
-      }
-    };
-    fetchProductList();
-  }, []);
+const CategoryProduct = async ({
+  searchParams,
+}: {
+  searchParams: { category?: string };
+}) => {
+  const category = (await searchParams?.category) || "";
+  const filter = category ? { category } : {};
+  await connectToDatabase();
+  const products = await Product.find(filter)
+    .limit(20)
+    .lean()
+    .then((res) => JSON.parse(JSON.stringify(res)));
 
   return (
     <div className="container mx-auto px-4 py-8 ">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {productList.map((product) => (
+        {products.map((product) => (
           <Link href={`/product/${product.name}`} key={product._id}>
             <div className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
               <div className="absolute flex justify-center items-center top-2.5 right-2.5 z-30 w-[34px] h-[34px] bg-white rounded-full">
@@ -100,4 +82,4 @@ const RenderAllProduct = () => {
   );
 };
 
-export default RenderAllProduct;
+export default CategoryProduct;

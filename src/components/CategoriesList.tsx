@@ -1,62 +1,69 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCamera, FaHeadphones, FaMouse } from "react-icons/fa";
 import { IoIosMore } from "react-icons/io";
 import { IoGameController } from "react-icons/io5";
 import { MdOutlineComputer, MdOutlinePhoneAndroid } from "react-icons/md";
 
+const categories = [
+  {
+    name: "phone",
+    label: "Phone",
+    icon: <MdOutlinePhoneAndroid className="size-[56px]" />,
+  },
+  {
+    name: "mouse",
+    label: "Chuột máy tính",
+    icon: <FaMouse className="size-[56px]" />,
+  },
+  {
+    name: "airport",
+    label: "AirPort",
+    icon: <FaHeadphones className="size-[56px]" />,
+  },
+  {
+    name: "laptop",
+    label: "Máy tính",
+    icon: <MdOutlineComputer className="size-[56px]" />,
+  },
+  {
+    name: "gaming",
+    label: "Gaming",
+    icon: <IoGameController className="size-[56px]" />,
+  },
+  {
+    name: "camera",
+    label: "Camera",
+    icon: <FaCamera className="size-[56px]" />,
+  },
+  {
+    name: "other",
+    label: "Other",
+    icon: <IoIosMore className="size-[56px]" />,
+  },
+];
+
 const CategoriesList = () => {
-  // const [productList, setProductList] = useState([]);
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   const fetchProductList = async () => {
-  //     try {
-  //       const response = await fetch("/api/product/add-product");
-  //       const dataProduct = await response.json();
-  //       if (!response.ok) {
-  //         throw new Error("Da co loi xay ra khi lay san pham tu csdl");
-  //       }
-  //       setProductList(dataProduct.products);
-  //     } catch (error: any) {
-  //       console.error(error.message);
-  //     }
-  //   };
-
-  //   fetchProductList();
-  // }, []);
-
+  const handleCategoryClick = (category: string) => {
+    router.push(`/product?category=${category}`);
+  };
   return (
     <div className="flex justify-between mt-14">
-      <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
-        <MdOutlinePhoneAndroid className="size-[56px]" />
-        <span className="text-lg">Phone</span>
-      </div>
-      <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
-        <FaMouse className="size-[56px]" />
-        <span className="text-lg">Chuột máy tính</span>
-      </div>
-      <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
-        <FaHeadphones className="size-[56px]" />
-        <span className="text-lg">AirPort</span>
-      </div>
-      <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
-        <MdOutlineComputer className="size-[56px]" />
-        <span className="text-lg">Máy tính</span>
-      </div>
-      <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
-        <IoGameController className="size-[56px]" />
-        <span className="text-lg">Gaming</span>
-      </div>
-      <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
-        <FaCamera className="size-[56px]" />
-        <span className="text-lg">Camera</span>
-      </div>
-      <div className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all ">
-        <IoIosMore className="size-[56px]" />
-        <span className="text-lg">Orther</span>
-      </div>
+      {categories.map((cat) => (
+        <div
+          key={cat.name}
+          onClick={() => handleCategoryClick(cat.name)}
+          className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all"
+        >
+          {cat.icon}
+          <span className="text-lg">{cat.label}</span>
+        </div>
+      ))}
     </div>
   );
 };
