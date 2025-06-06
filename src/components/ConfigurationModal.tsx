@@ -53,7 +53,6 @@ const ConfigurationModal = ({
   category?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  console.log(category);
 
   // Lấy cấu hình theo danh mục
   const fields =

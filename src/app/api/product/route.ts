@@ -4,11 +4,15 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
+    // Neu co search params ? thi lay theo loai con khong co thi render all tat ca san pham
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get("category");
     await connectToDatabase();
-    const product = await Product.find();
+    const query = category ? { category } : {};
+    const product = await Product.find(query);
     if (!product) {
       return NextResponse.json(
-        { message: "Cannot find product to Databese" },
+        { message: "Cannot find product to Database" },
         { status: 500 }
       );
     }

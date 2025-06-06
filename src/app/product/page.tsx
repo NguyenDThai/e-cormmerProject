@@ -1,24 +1,36 @@
-import React from "react";
-import connectToDatabase from "@/lib/mongodb";
-import Product from "@/models/product";
+"use client";
 import { StarIcon } from "lucide-react";
 import Link from "next/link";
 import { CiHeart } from "react-icons/ci";
 import Image from "next/image";
 import ButtonAddToCard from "@/components/ButtonAddToCard";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
-const CategoryProduct = async ({
-  searchParams,
-}: {
-  searchParams: { category?: string };
-}) => {
-  const category = (await searchParams?.category) || "";
-  const filter = category ? { category } : {};
-  await connectToDatabase();
-  const products = await Product.find(filter)
-    .limit(20)
-    .lean()
-    .then((res) => JSON.parse(JSON.stringify(res)));
+interface Product {
+  _id: string;
+  name: string;
+  image: string;
+  price: number;
+  salePrice: number;
+  rating?: number;
+}
+
+const CategoryProduct = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const res = await fetch(
+        `/api/product?${category ? `category=${category}` : ""}`
+      );
+      const data = await res.json();
+      setProducts(data.product);
+    };
+    fetchProduct();
+  }, [category]);
 
   return (
     <div className="container mx-auto px-4 py-8 ">
