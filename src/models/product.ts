@@ -41,6 +41,7 @@ const productSchema = new mongoose.Schema({
   salePrice: { type: Number, required: false, min: 0 },
   configuration: { type: configurationSchema, required: false },
   createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date },
 });
 
 productSchema.index({ "configuration.ram": 1 });

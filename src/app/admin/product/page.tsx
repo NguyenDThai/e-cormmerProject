@@ -79,18 +79,19 @@ const ProductPage = async () => {
                     <span className="text-gray-600 text-sm ml-1">4.5</span>
                   </div>
                 </div>
-
-                {/* Admin Actions */}
-                <div className="flex justify-end space-x-2 pt-2 border-t border-gray-100 mt-3">
-                  <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
-                    <IoPencil className="w-5 h-5" />
-                  </button>
-                  <button className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
-                    <CiTrash className="w-5 h-5" />
-                  </button>
-                </div>
               </div>
             </Link>
+            {/* Admin Actions */}
+            <div className="flex justify-end space-x-2 pt-2 border-t border-gray-100 mt-3">
+              <Link href={`/admin/product/edit/${product._id}`}>
+                <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors cursor-pointer">
+                  <IoPencil className="w-5 h-5" />
+                </button>
+              </Link>
+              <button className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
+                <CiTrash className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         ))}
       </div>
