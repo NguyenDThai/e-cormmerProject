@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -23,14 +24,12 @@ const Profile = () => {
         } else {
           throw new Error("Khong nhan duoc user");
         }
-      } catch (error) {
-        console.error(error.message);
+      } catch (error: any) {
+        console.log(error);
       }
     };
     fetchUser();
   }, []);
-
-  const role = user?.role === "thainguyen4646@gmail.com" ? "admin" : "user";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -62,11 +61,6 @@ const Profile = () => {
           <h2 className="text-xl font-semibold text-gray-800 mt-4">
             {user?.name}
           </h2>
-          {role === "admin" && (
-            <span className="text-blue-600 bg-blue-100 px-3 py-1 rounded-full text-sm font-medium mt-1">
-              {user?.role}
-            </span>
-          )}
         </div>
 
         {/* Thông tin chi tiết */}
@@ -120,11 +114,6 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-
-            {/* Thêm các section khác nếu cần */}
-            {/* <div className="bg-gray-50 rounded-lg p-5">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">...</h3>
-        </div> */}
           </div>
 
           <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">

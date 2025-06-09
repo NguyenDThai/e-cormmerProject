@@ -3,8 +3,8 @@ import { PlusIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { IoPencil } from "react-icons/io5";
-import { CiTrash } from "react-icons/ci";
 import { ProductList } from "@/components/RenderAllProduct";
+import BtnClearProduct from "@/components/BtnClearProduct";
 
 const ProductPage = async () => {
   const response = await fetch(
@@ -82,15 +82,13 @@ const ProductPage = async () => {
               </div>
             </Link>
             {/* Admin Actions */}
-            <div className="flex justify-end space-x-2 pt-2 border-t border-gray-100 mt-3">
+            <div className="flex justify-end items-center space-x-2 pt-2 border-t border-gray-100 mt-3">
               <Link href={`/admin/product/edit/${product._id}`}>
                 <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors cursor-pointer">
                   <IoPencil className="w-5 h-5" />
                 </button>
               </Link>
-              <button className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
-                <CiTrash className="w-5 h-5" />
-              </button>
+              <BtnClearProduct productId={product._id} />
             </div>
           </div>
         ))}

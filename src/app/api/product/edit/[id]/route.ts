@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import mongoose, { FlattenMaps, Types } from "mongoose";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/product";
+import { ObjectId } from "mongodb";
 import { v2 as cloudinary } from "cloudinary";
 
 interface IProduct {
@@ -198,6 +199,40 @@ export async function PUT(
     });
   } catch (error) {
     console.error("[PRODUCT_EDIT_PUT]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = await params;
+
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { error: "Invalid product ID" },
+        { status: 400 }
+      );
+    }
+
+    await connectToDatabase();
+    const result = await Product.deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { success: true, message: "Product deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("DELETE Error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

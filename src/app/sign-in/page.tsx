@@ -39,7 +39,7 @@ const SignIn = () => {
       route.push("/");
       toast.success("Đăng nhập thàng công");
     } else if (res?.status === 401) {
-      setError("Invalid Credentials");
+      setError("Thông tin không hợp lệ, Vui lòng thử lại");
       setPending(false);
     } else {
       setError("Something went wrong");
