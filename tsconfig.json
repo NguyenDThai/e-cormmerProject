@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "types": ["./types/next-auth.d.ts"],
+    // "./types/next-auth.d.ts"
+    "types": [],
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
