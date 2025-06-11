@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -28,7 +29,7 @@ interface ProductData {
     features: string[];
     custom: Record<string, string>;
   };
-  imageUrl: string;
+  images: string[];
 }
 
 interface EditProductFormProps {
@@ -39,9 +40,10 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [initialImage, setInitialImage] = useState("");
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [deletedImages, setDeletedImages] = useState<string[]>([]); // Theo dõi ảnh bị xóa
 
   const [formData, setFormData] = useState<ProductData>({
     _id: "",
@@ -66,7 +68,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
       features: [],
       custom: {},
     },
-    imageUrl: "",
+    images: [],
   });
 
   useEffect(() => {
@@ -79,6 +81,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const product = await response.json();
+        console.log("Fetched Product:", product);
         setFormData({
           ...product,
           price: product.price || 0,
@@ -100,7 +103,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
             custom: product.configuration?.custom || {},
           },
         });
-        setInitialImage(product.imageUrl);
+        setExistingImages(product.images || []);
       } catch (error) {
         setError(error instanceof Error ? error.message : "Unknown error");
       }
@@ -110,14 +113,22 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
 
   useEffect(() => {
     return () => {
-      if (file) URL.revokeObjectURL(URL.createObjectURL(file));
+      newImages.forEach((file) =>
+        URL.revokeObjectURL(URL.createObjectURL(file))
+      );
     };
-  }, [file]);
+  }, [newImages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    console.log("Submitting Existing Images:", existingImages);
+    console.log(
+      "Submitting New Images:",
+      newImages.map((f) => f.name)
+    );
+    console.log("Deleted Images:", deletedImages);
 
     const data = new FormData();
     data.append("name", formData.name);
@@ -127,7 +138,10 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
     data.append("description", formData.description);
     if (formData.salePrice)
       data.append("salePrice", formData.salePrice.toString());
-    if (file) data.append("image", file);
+    newImages.forEach((file) => data.append("images", file));
+    console.log("FormData Images:", Array.from(data.getAll("images")));
+    data.append("existingImages", JSON.stringify(existingImages));
+    data.append("deletedImages", JSON.stringify(deletedImages)); // Gửi danh sách ảnh bị xóa
     data.append("configuration", JSON.stringify(formData.configuration));
 
     try {
@@ -141,6 +155,10 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
         throw new Error(dataError.error || "Failed to update product");
       }
 
+      const responseData = await response.json();
+      setExistingImages(responseData.data.images); // Cập nhật existingImages từ response
+      setNewImages([]); // Reset newImages
+      setDeletedImages([]); // Reset deletedImages
       toast.success("Cập nhật sản phẩm thành công");
       router.push("/admin/product");
     } catch (error) {
@@ -191,13 +209,30 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setFormData((prev) => ({
-        ...prev,
-        imageUrl: URL.createObjectURL(selectedFile),
-      }));
+    const selectedFiles = Array.from(e.target.files || []);
+    console.log(
+      "Selected Files:",
+      selectedFiles.map((f) => f.name)
+    );
+    if (selectedFiles.length > 0) {
+      setNewImages((prev) => [...prev, ...selectedFiles]);
+    }
+  };
+
+  useEffect(() => {
+    console.log(
+      "Update New Images:",
+      newImages.map((f) => f.name)
+    );
+  }, [newImages]);
+
+  const removeImage = (index: number, isNew: boolean) => {
+    if (isNew) {
+      setNewImages((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      const imageToRemove = existingImages[index];
+      setExistingImages((prev) => prev.filter((_, i) => i !== index));
+      setDeletedImages((prev) => [...prev, imageToRemove]); // Thêm ảnh bị xóa vào danh sách
     }
   };
 
@@ -309,34 +344,55 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
           <label className="block text-gray-700">Hình ảnh</label>
           <input
             type="file"
-            name="image"
+            name="images"
             accept="image/*"
             ref={inputRef}
             onChange={handleFileChange}
+            multiple
             className="w-full border rounded p-2"
           />
-          {(file || initialImage) && (
-            <div className="mt-2">
-              <Image
-                src={file ? URL.createObjectURL(file) : initialImage}
-                alt="Product preview"
-                width={100}
-                height={100}
-                className="object-cover"
-              />
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                className="mt-2"
-                onClick={() => {
-                  setFile(null);
-                  setFormData((prev) => ({ ...prev, imageUrl: initialImage }));
-                  if (inputRef.current) inputRef.current.value = "";
-                }}
-              >
-                Xóa
-              </Button>
+          {(existingImages.length > 0 || newImages.length > 0) && (
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {existingImages.map((img, index) => (
+                <div key={index} className="relative">
+                  <Image
+                    src={img}
+                    alt={`${formData.name} - Ảnh ${index + 1}`}
+                    width={100}
+                    height={100}
+                    className="object-cover rounded"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-0 right-0"
+                    onClick={() => removeImage(index, false)}
+                  >
+                    X
+                  </Button>
+                </div>
+              ))}
+              {newImages.map((file, index) => (
+                <div key={`new-${index}`} className="relative">
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    alt={`${formData.name} - Ảnh mới ${index + 1}`}
+                    width={100}
+                    height={100}
+                    className="object-cover rounded"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-0 right-0"
+                    onClick={() => removeImage(index, true)}
+                  >
+                    X
+                  </Button>
+                </div>
+              ))}
             </div>
           )}
         </div>

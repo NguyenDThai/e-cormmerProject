@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
     const product = await Product.find(query)
       .select(
-        "name brand category image description price salePrice configuration"
+        "name brand category images description price salePrice configuration"
       )
       .lean()
       .limit(20);
@@ -57,13 +57,13 @@ export async function POST(request: Request) {
     const salePrice = formData.get("salePrice")
       ? parseFloat(formData.get("salePrice") as string)
       : undefined;
-    const image = formData.get("image") as File;
+    const images = formData.getAll("images") as File[];
     // xu ly cau hinh
     const configuration = formData.get("configuration")
       ? JSON.parse(formData.get("configuration") as string)
       : {};
 
-    if (!name || !brand || !category || !price || !image) {
+    if (!name || !brand || !category || !price || !images) {
       return NextResponse.json(
         { error: "Missing required failds" },
         { status: 400 }
@@ -85,23 +85,24 @@ export async function POST(request: Request) {
     }
 
     // upload hinh anh len cloudinary
-
-    const arrayBuffer = await image.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const uploadResult = await new Promise((res, rej) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: "products",
-        },
-        (error, result) => {
-          if (error) rej(error);
-          else res(result);
-        }
-      );
-      uploadStream.end(buffer);
-    });
-
-    const imageUrl = (uploadResult as any).secure_url;
+    const imageUrls = [];
+    for (const image of images) {
+      if (image.size > 0) {
+        const arrayBuffer = await image.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: "products" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          uploadStream.end(buffer);
+        });
+        imageUrls.push((uploadResult as any).secure_url);
+      }
+    }
 
     // Loai bo cac truong trong
     const cleanedConfiguration = Object.fromEntries(
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
       name,
       brand,
       category,
-      image: imageUrl,
+      images: imageUrls,
       price,
       description,
       salePrice,

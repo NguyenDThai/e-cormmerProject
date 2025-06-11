@@ -4,12 +4,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const AddProductForm = () => {
   const route = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [formData, setFormData] = useState({
@@ -34,22 +35,19 @@ const AddProductForm = () => {
       features: [] as string[],
       custom: {} as Record<string, string>,
     },
-    image: null as File | null,
   });
 
   // Clean up URL.createObjectURL to prevent memory leaks
   useEffect(() => {
     return () => {
-      if (file) {
-        URL.revokeObjectURL(URL.createObjectURL(file));
-      }
+      files.forEach((files) => URL.revokeObjectURL(URL.createObjectURL(files)));
     };
-  }, [file]);
+  }, [files]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!file) {
+    if (!files) {
       setError("Please select an image");
       return;
     }
@@ -64,7 +62,7 @@ const AddProductForm = () => {
     data.append("price", formData.price);
     data.append("description", formData.description);
     if (formData.salePrice) data.append("salePrice", formData.salePrice);
-    if (formData.image) data.append("image", formData.image);
+    files.forEach((file) => data.append("images", file));
     data.append("configuration", JSON.stringify(formData.configuration));
 
     try {
@@ -106,10 +104,14 @@ const AddProductForm = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }));
-      setFile(file);
+    const selectedFiles = Array.from(e.target.files || []);
+    setFiles((prev) => [...prev, ...selectedFiles]);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    if (inputRef.current) {
+      inputRef.current.value = "";
     }
   };
 
@@ -217,27 +219,28 @@ const AddProductForm = () => {
             className="w-full border rounded p-2"
             required
           />
-          {file && (
-            <div>
-              <Image
-                src={URL.createObjectURL(file)}
-                alt="check-image"
-                width={100}
-                height={100}
-              />
-              <Button
-                type="button"
-                variant={"destructive"}
-                size={"sm"}
-                onClick={() => {
-                  setFile(null);
-                  if (inputRef.current) {
-                    inputRef.current.value = "";
-                  }
-                }}
-              >
-                Xoa
-              </Button>
+          {files.length > 0 && (
+            <div className="mt-4 grid grid-cols-4 gap-2">
+              {files.map((file, index) => (
+                <div key={index} className="relative">
+                  <Image
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index}`}
+                    width={100}
+                    height={100}
+                    className="rounded object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-0 right-4"
+                    onClick={() => removeFile(index)}
+                  >
+                    <FaRegTrashAlt />
+                  </Button>
+                </div>
+              ))}
             </div>
           )}
         </div>

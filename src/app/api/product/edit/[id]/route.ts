@@ -16,7 +16,7 @@ interface IProduct {
   price: number;
   description: string;
   salePrice?: number;
-  image: string;
+  images: string[];
   configuration: {
     ram: number;
     storage: number;
@@ -58,7 +58,7 @@ export async function GET(
     return NextResponse.json({
       ...product,
       _id: product._id.toString(),
-      imageUrl: product.image, // Map image to imageUrl for consistency
+      images: product.images, // Trả về mảng images
     });
   } catch (error) {
     console.error("[PRODUCT_EDIT_GET]", error);
@@ -74,7 +74,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: "Invalid product ID format" },
@@ -93,7 +93,13 @@ export async function PUT(
     const salePrice = formData.get("salePrice")
       ? parseFloat(formData.get("salePrice") as string)
       : undefined;
-    const image = formData.get("image") as File | null;
+    const images = formData.getAll("images") as File[];
+    const existingImages = JSON.parse(
+      formData.get("existingImages") as string
+    ) as string[];
+    const deletedImages = JSON.parse(
+      formData.get("deletedImages") as string
+    ) as string[]; // Nhận danh sách ảnh bị xóa
     const configuration = formData.get("configuration")
       ? JSON.parse(formData.get("configuration") as string)
       : {};
@@ -143,28 +149,70 @@ export async function PUT(
       custom: configuration.custom || {},
     };
 
-    // Remove undefined fields
     const filteredConfiguration = Object.fromEntries(
       Object.entries(cleanedConfiguration).filter(([_, v]) => v !== undefined)
     );
 
-    let imageUrl = (
-      (await Product.findById(id).select("image").lean()) as IProduct
-    )?.image;
-    if (image && image.size > 0) {
-      const arrayBuffer = await image.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const uploadResult = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "products" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
+    const currentProduct = (await Product.findById(id).lean()) as IProduct;
+    let updatedImages = currentProduct.images || [];
+
+    // Xử lý ảnh mới
+    if (images.length > 0) {
+      for (const image of images) {
+        if (image.size > 0) {
+          try {
+            const arrayBuffer = await image.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const uploadResult = await new Promise((resolve, reject) => {
+              cloudinary.uploader
+                .upload_stream({ folder: "products" }, (error, result) => {
+                  if (error) reject(error);
+                  else resolve(result);
+                })
+                .end(buffer);
+            });
+            updatedImages.push((uploadResult as any).secure_url);
+            console.log("Uploaded Image:", (uploadResult as any).secure_url);
+          } catch (uploadError) {
+            console.error("Upload Error:", uploadError);
+            continue;
           }
-        );
-        uploadStream.end(buffer);
-      });
-      imageUrl = (uploadResult as any).secure_url;
+        }
+      }
+    }
+
+    // Kết hợp existingImages với updatedImages (bao gồm ảnh mới)
+    updatedImages = [...new Set([...existingImages, ...updatedImages])];
+    console.log("Updated Images Before Delete:", updatedImages);
+
+    // Xóa ảnh từ deletedImages
+    for (const img of deletedImages) {
+      try {
+        const publicId = img.split("/").pop()?.split(".")[0];
+        if (publicId) {
+          await cloudinary.uploader.destroy(`products/${publicId}`);
+          console.log("Deleted Image Public ID from Deleted List:", publicId);
+          updatedImages = updatedImages.filter((url) => url !== img); // Loại bỏ khỏi updatedImages
+        }
+      } catch (deleteError) {
+        console.error("Delete Error:", deleteError);
+      }
+    }
+
+    // Xóa ảnh không còn trong updatedImages (tránh trùng lặp với deletedImages)
+    const imagesToDelete = currentProduct.images.filter(
+      (img) => !updatedImages.includes(img) && !deletedImages.includes(img)
+    );
+    for (const img of imagesToDelete) {
+      try {
+        const publicId = img.split("/").pop()?.split(".")[0];
+        if (publicId) {
+          await cloudinary.uploader.destroy(`products/${publicId}`);
+          console.log("Deleted Image Public ID:", publicId);
+        }
+      } catch (deleteError) {
+        console.error("Delete Error:", deleteError);
+      }
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -177,7 +225,7 @@ export async function PUT(
           price,
           description,
           salePrice,
-          image: imageUrl,
+          images: updatedImages,
           configuration: filteredConfiguration,
           updatedAt: new Date(),
         },
@@ -194,7 +242,7 @@ export async function PUT(
       data: {
         ...updatedProduct.toObject(),
         _id: updatedProduct._id.toString(),
-        imageUrl: updatedProduct.image,
+        images: updatedProduct.images,
       },
     });
   } catch (error) {

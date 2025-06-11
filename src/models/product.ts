@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema({
     enum: ["phone", "laptop", "airport", "gaming", "mouse", "camera", "other"],
     required: true,
   },
-  image: { type: String, required: true },
+  images: [{ type: String, required: true }],
   description: { type: String, required: false },
   price: { type: Number, required: true, min: 0 },
   salePrice: { type: Number, required: false, min: 0 },
@@ -48,6 +48,7 @@ productSchema.index({ "configuration.ram": 1 });
 productSchema.index({ "configuration.storage": 1 });
 productSchema.index({ "configuration.screenSize": 1 });
 
+delete mongoose.models.Product;
 const Product =
   mongoose.models.Product || mongoose.model("Product", productSchema);
 

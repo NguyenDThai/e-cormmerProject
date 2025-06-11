@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 interface Product {
   _id: string;
   name: string;
-  image: string;
+  images: [];
   price: number;
   salePrice: number;
   rating?: number;
@@ -44,11 +44,12 @@ const CategoryProduct = () => {
               {/* Product Image */}
               <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
                 <Image
-                  src={product?.image}
-                  alt={product?.name}
-                  width={200}
-                  height={200}
-                  className="w-full h-full object-contain bg-transparent transition-transform duration-300 group-hover:scale-105"
+                  src={product.images[0] || "/placeholder.jpg"} // Ảnh đại diện
+                  alt={product.name}
+                  width={300}
+                  height={300}
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                  priority
                 />
               </div>
 

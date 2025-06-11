@@ -12,7 +12,7 @@ export type ProductList = [
   {
     _id: string;
     name: string;
-    image: string;
+    images: string;
     price: number;
     salePrice: number;
   }
@@ -50,7 +50,7 @@ const RenderAllProduct = () => {
               {/* Product Image */}
               <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
                 <Image
-                  src={product?.image}
+                  src={product?.images[0]}
                   alt={product?.name}
                   width={200}
                   height={200}

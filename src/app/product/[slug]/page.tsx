@@ -44,14 +44,36 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
     <div className="container mx-auto py-8 px-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Phần hình ảnh */}
-        <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center">
-          <Image
-            src={productDetail.image}
-            alt={productDetail.name}
-            width={500}
-            height={500}
-            className="w-full h-auto max-h-[500px] object-contain"
-          />
+        <div className="flex flex-col gap-2">
+          <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center">
+            <Image
+              src={productDetail.images[0] || "/placeholder.jpg"}
+              alt={productDetail.name}
+              width={500}
+              height={500}
+              className="w-full h-auto max-h-[500px] object-contain"
+            />
+          </div>
+
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Hình ảnh khác</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {productDetail.images.map((img, index) => (
+                <div
+                  key={index}
+                  className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden"
+                >
+                  <Image
+                    src={img || "/placeholder.jpg"}
+                    alt={`${productDetail.name} - Ảnh ${index + 2}`}
+                    width={150}
+                    height={150}
+                    className="w-full h-full object-contain hover:opacity-75 transition-opacity"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Phần thông tin */}
@@ -105,7 +127,7 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
                   {/* Product Image */}
                   <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
                     <Image
-                      src={product?.image}
+                      src={product?.images[0]}
                       alt={product?.name}
                       width={200}
                       height={200}
