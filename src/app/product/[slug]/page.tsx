@@ -58,7 +58,7 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
           <div>
             <h2 className="text-lg font-semibold mb-2">Hình ảnh khác</h2>
             <div className="grid grid-cols-3 gap-2">
-              {productDetail.images.map((img, index) => (
+              {productDetail.images.splice(1).map((img, index) => (
                 <div
                   key={index}
                   className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden"
@@ -114,8 +114,10 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
           </button>
         </div>
       </div>
+
+      {/* San pham Lien quan */}
       <div className="mt-10">
-        <h1 className="text-2xl font-semibold">San pham lien quan</h1>
+        <h1 className="text-2xl font-semibold">Sản phẩm liên quan</h1>
         <div className="container mx-auto px-4 py-8 ">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {categoryProduct.map((product) => (

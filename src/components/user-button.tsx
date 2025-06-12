@@ -29,8 +29,7 @@ const UserButton = () => {
 
   const avatarFallback = session?.user?.name?.charAt(0).toUpperCase();
 
-  const role =
-    session?.user.email === "thainguyen4646@gmail.com" ? "admin" : "user";
+  const role = session?.user.role;
 
   return (
     <nav>
