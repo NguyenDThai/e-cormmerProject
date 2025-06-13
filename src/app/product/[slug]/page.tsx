@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ShoppingCartIcon, StarIcon } from "lucide-react";
 import { CiHeart } from "react-icons/ci";
 import Link from "next/link";
+import ImageProductDetail from "@/components/ImageProductDetail";
 
 const getProductBySlug = async (name: string) => {
   try {
@@ -44,37 +45,7 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
     <div className="container mx-auto py-8 px-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Phần hình ảnh */}
-        <div className="flex flex-col gap-2">
-          <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-center">
-            <Image
-              src={productDetail.images[0] || "/placeholder.jpg"}
-              alt={productDetail.name}
-              width={500}
-              height={500}
-              className="w-full h-auto max-h-[500px] object-contain"
-            />
-          </div>
-
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Hình ảnh khác</h2>
-            <div className="grid grid-cols-3 gap-2">
-              {productDetail.images.splice(1).map((img, index) => (
-                <div
-                  key={index}
-                  className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden"
-                >
-                  <Image
-                    src={img || "/placeholder.jpg"}
-                    alt={`${productDetail.name} - Ảnh ${index + 2}`}
-                    width={150}
-                    height={150}
-                    className="w-full h-full object-contain hover:opacity-75 transition-opacity"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <ImageProductDetail productDetail={productDetail} />
 
         {/* Phần thông tin */}
         <div className="space-y-6">
