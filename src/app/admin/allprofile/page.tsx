@@ -9,6 +9,8 @@ export interface AllUser {
   name: string;
   email: string;
   role: string;
+  address: string;
+  phone: string;
 }
 
 const AllProfile = () => {

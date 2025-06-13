@@ -28,7 +28,7 @@ export async function PUT(
     }
 
     // Lấy userId và role từ request
-    const { id } = params;
+    const { id } = await params;
     const { role } = await request.json();
 
     // Kiểm tra role hợp lệ

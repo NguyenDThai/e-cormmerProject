@@ -45,7 +45,7 @@ export function RenderAllUser({ user }: { user: AllUser[] }) {
         window.location.reload(); // Tạm thời reload, có thể thay bằng signIn
       }
 
-      toast.success("Phan quyen thanh cong");
+      toast.success("Phân quyền thành công");
     } catch (error: any) {
       toast.error("Da xay ra loi khi phan quyen", error);
     } finally {
@@ -54,16 +54,22 @@ export function RenderAllUser({ user }: { user: AllUser[] }) {
   };
 
   return (
-    <Table className="max-w-[800px] mx-auto border rounded-lg overflow-hidden mt-11">
-      <TableHeader className="bg-gray-100 dark:bg-gray-800">
+    <Table className="w-full max-w-5xl mx-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mt-6 shadow-sm">
+      <TableHeader className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <TableRow>
-          <TableHead className="w-[200px] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <TableHead className="w-[200px] px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
             Họ và tên
           </TableHead>
-          <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
             Email
           </TableHead>
-          <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+            Địa Chỉ
+          </TableHead>
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+            Điện Thoại
+          </TableHead>
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
             Vai trò
           </TableHead>
         </TableRow>
@@ -72,19 +78,33 @@ export function RenderAllUser({ user }: { user: AllUser[] }) {
         {user.map((user) => (
           <TableRow
             key={user._id}
-            className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
           >
             <TableCell className="px-6 py-4 whitespace-nowrap">
               <div className="flex items-center">
                 <div className="ml-0">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {user.name}
                   </div>
                 </div>
               </div>
             </TableCell>
-            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
               {user.email}
+            </TableCell>
+            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+              {user?.address || (
+                <span className="text-gray-400 dark:text-gray-500">
+                  Chưa cập nhật
+                </span>
+              )}
+            </TableCell>
+            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+              {user?.phone || (
+                <span className="text-gray-400 dark:text-gray-500">
+                  Chưa cập nhật
+                </span>
+              )}
             </TableCell>
             <TableCell className="px-6 py-4 whitespace-nowrap">
               {session?.user?.role === "admin" ? (
@@ -95,7 +115,7 @@ export function RenderAllUser({ user }: { user: AllUser[] }) {
                   defaultValue={user.role}
                   disabled={loading === user._id}
                 >
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger className="w-[120px] bg-white dark:bg-gray-800">
                     <SelectValue placeholder="Chọn vai trò" />
                   </SelectTrigger>
                   <SelectContent>
@@ -105,12 +125,12 @@ export function RenderAllUser({ user }: { user: AllUser[] }) {
                 </Select>
               ) : (
                 <span
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    ${
-                      user.role === "admin"
-                        ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-                        : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    }`}
+                  className={`px-3 py-1 inline-flex text-sm leading-5 font-medium rounded-full 
+                ${
+                  user.role === "admin"
+                    ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-200"
+                    : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200"
+                }`}
                 >
                   {user.role}
                 </span>
