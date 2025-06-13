@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { CiHeart } from "react-icons/ci";
+import { useSession } from "next-auth/react";
 
 export type ProductList = [
   {
@@ -20,6 +21,7 @@ export type ProductList = [
 
 const RenderAllProduct = () => {
   const [productList, setProductList] = useState<ProductList | []>([]);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchProductList = async () => {
@@ -44,9 +46,11 @@ const RenderAllProduct = () => {
         {productList.map((product) => (
           <Link href={`/product/${product.name}`} key={product._id}>
             <div className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
-              <div className="absolute flex justify-center items-center top-2.5 right-2.5 z-30 w-[34px] h-[34px] bg-white rounded-full">
-                <CiHeart className="size-6" />
-              </div>
+              {session?.user.role === "user" && (
+                <div className="absolute flex justify-center items-center top-2.5 right-2.5 z-30 w-[34px] h-[34px] bg-white rounded-full">
+                  <CiHeart className="size-6" />
+                </div>
+              )}
               {/* Product Image */}
               <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
                 <Image

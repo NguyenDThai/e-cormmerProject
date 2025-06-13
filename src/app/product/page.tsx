@@ -6,6 +6,7 @@ import Image from "next/image";
 import ButtonAddToCard from "@/components/ButtonAddToCard";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface Product {
   _id: string;
@@ -17,6 +18,8 @@ interface Product {
 }
 
 const CategoryProduct = () => {
+  const { data: session } = useSession();
+
   const [products, setProducts] = useState<Product[]>([]);
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
@@ -38,9 +41,11 @@ const CategoryProduct = () => {
         {products.map((product) => (
           <Link href={`/product/${product.name}`} key={product._id}>
             <div className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
-              <div className="absolute flex justify-center items-center top-2.5 right-2.5 z-30 w-[34px] h-[34px] bg-white rounded-full">
-                <CiHeart className="size-6" />
-              </div>
+              {session?.user.role === "user" && (
+                <div className="absolute flex justify-center items-center top-2.5 right-2.5 z-30 w-[34px] h-[34px] bg-white rounded-full">
+                  <CiHeart className="size-6" />
+                </div>
+              )}
               {/* Product Image */}
               <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
                 <Image
