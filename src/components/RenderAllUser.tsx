@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {
   Table,
   TableBody,
@@ -47,7 +46,7 @@ export function RenderAllUser({ user }: { user: AllUser[] }) {
 
       toast.success("Phân quyền thành công");
     } catch (error: any) {
-      toast.error("Da xay ra loi khi phan quyen", error);
+      toast.error("Đã xảy ra lỗi khi phân quyền", error);
     } finally {
       setLoading(null);
     }

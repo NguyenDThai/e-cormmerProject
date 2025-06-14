@@ -15,6 +15,9 @@ export interface AllUser {
 
 const AllProfile = () => {
   const [isAllUser, setIsAllUser] = useState<AllUser[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<AllUser[]>([]);
+  const [filterRole, setFilterRole] = useState<string>("all");
+
   useEffect(() => {
     const fetchAllUser = async () => {
       try {
@@ -22,6 +25,7 @@ const AllProfile = () => {
         const data = await response.json();
         if (response.ok) {
           setIsAllUser(data.allUser);
+          setFilteredUsers(data.allUser);
         } else {
           throw new Error("Da co loi xay ra khi lay user cho admin");
         }
@@ -32,12 +36,36 @@ const AllProfile = () => {
     fetchAllUser();
   }, []);
 
+  useEffect(() => {
+    if (filterRole === "all") {
+      setFilteredUsers(isAllUser);
+    } else {
+      setFilteredUsers(isAllUser.filter((user) => user.role === filterRole));
+    }
+  }, [filterRole, isAllUser]);
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterRole(e.target.value);
+  };
+
   return (
     <div className="h-screen">
-      <h1 className="text-center text-2xl font-semibold">
-        Danh sách người dùng
-      </h1>
-      <RenderAllUser user={isAllUser} />
+      <div className="flex justify-center">
+        <h1 className="text-center text-2xl font-semibold">
+          Danh sách người dùng
+        </h1>
+        <select
+          name="roleFilter"
+          className="ml-7 p-2 border rounded"
+          value={filterRole}
+          onChange={handleFilterChange}
+        >
+          <option value="all">All</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <RenderAllUser user={filteredUsers} />
       <div className="flex justify-center mt-4">
         <Link href="/">
           <Button>Về trang chủ</Button>
