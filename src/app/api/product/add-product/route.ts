@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
     const product = await Product.find(query)
       .select(
-        "name brand category images description price salePrice configuration"
+        "name brand category images description price salePrice quantity configuration"
       )
       .lean()
       .limit(20);
@@ -54,6 +54,7 @@ export async function POST(request: Request) {
     const category = formData.get("category") as string;
     const price = formData.get("price") as string;
     const description = formData.get("description") as string;
+    const quantity = formData.get("quantity") as string; // Added quantity
     const salePrice = formData.get("salePrice")
       ? parseFloat(formData.get("salePrice") as string)
       : undefined;
@@ -82,6 +83,12 @@ export async function POST(request: Request) {
     ];
     if (!validCategories.includes(category)) {
       return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+    }
+
+    // Validate quantity
+    const parsedQuantity = parseInt(quantity);
+    if (isNaN(parsedQuantity) || parsedQuantity < 0) {
+      return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
     }
 
     // upload hinh anh len cloudinary
@@ -120,6 +127,7 @@ export async function POST(request: Request) {
       price,
       description,
       salePrice,
+      quantity: parsedQuantity,
       configuration: cleanedConfiguration,
     });
 

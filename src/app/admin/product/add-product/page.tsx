@@ -20,6 +20,7 @@ const AddProductForm = () => {
     price: "",
     description: "",
     salePrice: "",
+    quantity: "",
     configuration: {
       ram: "",
       storage: "",
@@ -61,6 +62,7 @@ const AddProductForm = () => {
     data.append("category", formData.category);
     data.append("price", formData.price);
     data.append("description", formData.description);
+    data.append("quantity", formData.quantity);
     if (formData.salePrice) data.append("salePrice", formData.salePrice);
     files.forEach((file) => data.append("images", file));
     data.append("configuration", JSON.stringify(formData.configuration));
@@ -183,6 +185,18 @@ const AddProductForm = () => {
             className="w-full border rounded p-2"
             min="0"
             step="0.01"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Số lượng</label>
+          <input
+            type="number"
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleInputChange}
+            className="w-full border rounded p-2"
+            min="0"
             required
           />
         </div>

@@ -14,6 +14,7 @@ interface ProductData {
   price: number;
   description: string;
   salePrice?: number;
+  quantity: number; // Added quantity
   configuration: {
     ram?: number;
     storage?: number;
@@ -53,6 +54,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
     price: 0,
     description: "",
     salePrice: undefined,
+    quantity: 0, // Added quantity
     configuration: {
       ram: undefined,
       storage: undefined,
@@ -86,6 +88,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
           ...product,
           price: product.price || 0,
           salePrice: product.salePrice || undefined,
+          quantity: product.quantity || 0, // Added quantity
           configuration: {
             ram: product.configuration?.ram || undefined,
             storage: product.configuration?.storage || undefined,
@@ -136,6 +139,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
     data.append("category", formData.category);
     data.append("price", formData.price.toString());
     data.append("description", formData.description);
+    data.append("quantity", formData.quantity.toString()); // Added quantity
     if (formData.salePrice)
       data.append("salePrice", formData.salePrice.toString());
     newImages.forEach((file) => data.append("images", file));
@@ -197,7 +201,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: ["price", "salePrice"].includes(name)
+        [name]: ["price", "salePrice", "quantity"].includes(name)
           ? value
             ? parseFloat(value)
             : name === "salePrice"
@@ -316,6 +320,18 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
             className="w-full border rounded p-2"
             min="0"
             step="0.01"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Số lượng</label>
+          <input
+            type="number"
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleInputChange}
+            className="w-full border rounded p-2"
+            min="0"
             required
           />
         </div>

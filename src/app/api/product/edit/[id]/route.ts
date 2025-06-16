@@ -16,6 +16,7 @@ interface IProduct {
   price: number;
   description: string;
   salePrice?: number;
+  quantity: number; // Added quantity
   images: string[];
   configuration: {
     ram: number;
@@ -37,7 +38,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -59,6 +60,7 @@ export async function GET(
       ...product,
       _id: product._id.toString(),
       images: product.images, // Trả về mảng images
+      quantity: product.quantity, // Added quantity
     });
   } catch (error) {
     console.error("[PRODUCT_EDIT_GET]", error);
@@ -74,7 +76,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: "Invalid product ID format" },
@@ -90,6 +92,7 @@ export async function PUT(
     const category = formData.get("category") as string;
     const price = parseFloat(formData.get("price") as string);
     const description = formData.get("description") as string;
+    const quantity = parseFloat(formData.get("quantity") as string); // Added quantity
     const salePrice = formData.get("salePrice")
       ? parseFloat(formData.get("salePrice") as string)
       : undefined;
@@ -107,6 +110,14 @@ export async function PUT(
     if (!name || !brand || !category || !price) {
       return NextResponse.json(
         { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Validate quantity
+    if (quantity < 0) {
+      return NextResponse.json(
+        { error: "Quantity must be non-negative" },
         { status: 400 }
       );
     }
@@ -225,6 +236,7 @@ export async function PUT(
           price,
           description,
           salePrice,
+          quantity, // Added quantity
           images: updatedImages,
           configuration: filteredConfiguration,
           updatedAt: new Date(),
@@ -243,6 +255,7 @@ export async function PUT(
         ...updatedProduct.toObject(),
         _id: updatedProduct._id.toString(),
         images: updatedProduct.images,
+        quantity: updatedProduct.quantity, // Added quantity
       },
     });
   } catch (error) {

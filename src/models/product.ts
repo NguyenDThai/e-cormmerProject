@@ -39,6 +39,7 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: false },
   price: { type: Number, required: true, min: 0 },
   salePrice: { type: Number, required: false, min: 0 },
+  quantity: { type: Number, required: true, min: 0, default: 0 }, // Số lượng sản phẩm
   configuration: { type: configurationSchema, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date },
