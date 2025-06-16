@@ -31,7 +31,7 @@ export default function Home() {
           <section className="mb-16">
             <div className="flex items-center">
               <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
-              <p className="text-lg text-blue-500 ml-4">Danh sach san pham</p>
+              <p className="text-lg text-blue-500 ml-4">Danh sách sản phẩm</p>
             </div>
             <h2 className="text-4xl font-semibold mt-5">
               Theo thể loại sản phẩm

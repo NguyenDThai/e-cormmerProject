@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { FaCamera, FaHeadphones, FaMouse } from "react-icons/fa";
+import { FaHeadphones, FaMouse } from "react-icons/fa";
 import { IoIosMore } from "react-icons/io";
 import { IoGameController } from "react-icons/io5";
 import { MdOutlineComputer, MdOutlinePhoneAndroid } from "react-icons/md";
+import { GiCctvCamera } from "react-icons/gi";
 
 const categories = [
   {
@@ -20,8 +20,8 @@ const categories = [
     icon: <FaMouse className="size-[56px]" />,
   },
   {
-    name: "airport",
-    label: "AirPort",
+    name: "airpod",
+    label: "Airpod",
     icon: <FaHeadphones className="size-[56px]" />,
   },
   {
@@ -37,7 +37,7 @@ const categories = [
   {
     name: "camera",
     label: "Camera",
-    icon: <FaCamera className="size-[56px]" />,
+    icon: <GiCctvCamera className="size-[56px]" />,
   },
   {
     name: "other",
