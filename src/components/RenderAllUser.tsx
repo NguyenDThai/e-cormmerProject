@@ -15,42 +15,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 import { AllUser } from "@/app/admin/allprofile/page";
-import { toast } from "sonner";
 
-export function RenderAllUser({ user }: { user: AllUser[] }) {
+interface RenderAllUserProps {
+  user: AllUser[];
+  updateUserRole: (userId: string, newRole: string) => Promise<void>;
+  loading: string | null;
+}
+
+export function RenderAllUser({
+  user,
+  updateUserRole,
+  loading,
+}: RenderAllUserProps) {
   const { data: session } = useSession();
-  const [loading, setLoading] = useState<string | null>(null);
-
-  const handleRoleChange = async (userId: string, newRole: string) => {
-    setLoading(userId);
-    try {
-      const response = await fetch(`/api/profile/user/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to update role");
-      }
-
-      // Làm mới session nếu đổi vai trò của chính user hiện tại
-      if (userId === session?.user?.id) {
-        window.location.reload(); // Tạm thời reload, có thể thay bằng signIn
-      }
-
-      toast.success("Phân quyền thành công");
-    } catch (error: any) {
-      toast.error("Đã xảy ra lỗi khi phân quyền", error);
-    } finally {
-      setLoading(null);
-    }
-  };
 
   return (
     <Table className="w-full max-w-5xl mx-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mt-6 shadow-sm">
@@ -109,7 +87,7 @@ export function RenderAllUser({ user }: { user: AllUser[] }) {
               {session?.user?.role === "admin" ? (
                 <Select
                   onValueChange={(value) =>
-                    handleRoleChange(user._id as string, value)
+                    updateUserRole(user._id as string, value)
                   }
                   defaultValue={user.role}
                   disabled={loading === user._id}
