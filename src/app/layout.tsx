@@ -35,7 +35,7 @@ export default function RootLayout({
         <ClientSessionProvider>
           <Toaster position="top-center" richColors />
           <Header />
-          <div>{children}</div>
+          <main>{children}</main>
           <Footer />
         </ClientSessionProvider>
       </body>

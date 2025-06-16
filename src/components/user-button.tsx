@@ -99,7 +99,7 @@ const UserButton = () => {
                       Voucher
                     </DropdownMenuItem>
                   </Link>
-                  <Link href="/">
+                  <Link href="/admin/statistical">
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
                       Thống kê
                     </DropdownMenuItem>
