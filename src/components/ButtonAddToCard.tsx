@@ -13,7 +13,7 @@ const ButtonAddToCard = () => {
       onClick={handleAddToCart}
     >
       <ShoppingCartIcon className="w-5 h-5" />
-      <span>Add to Cart</span>
+      <span>Thêm vào giỏ hàng</span>
     </button>
   );
 };

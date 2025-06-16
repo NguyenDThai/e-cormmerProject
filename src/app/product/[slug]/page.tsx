@@ -3,10 +3,12 @@ import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/product";
 import ConfigurationModal from "@/components/ConfigurationModal";
 import Image from "next/image";
-import { ShoppingCartIcon, StarIcon } from "lucide-react";
+import { StarIcon } from "lucide-react";
 import { CiHeart } from "react-icons/ci";
 import Link from "next/link";
 import ImageProductDetail from "@/components/ImageProductDetail";
+import ButtonAddToCard from "@/components/ButtonAddToCard";
+import QuantityProduct from "@/components/QuantityProduct";
 
 const getProductBySlug = async (name: string) => {
   try {
@@ -34,7 +36,7 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const productDetail = await getProductBySlug(decodedSlug);
-  // Api loc theo loai san pham
+  // Api loc theo loai san pham để render tất cả sản phẩm có liên quan (vd: điện thoại thì render tất cả các sản phẩm liên quan đến điện thoại)
   const categoryProduct = await relatedProduct(productDetail.category);
 
   if (!productDetail) {
@@ -52,37 +54,52 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
           <h1 className="text-3xl font-bold">{productDetail.name}</h1>
           <p className="text-gray-600">{productDetail.description}</p>
 
-          <div className="flex items-center gap-4 justify-between">
-            <div className="flex items-center gap-4">
-              {productDetail.salePrice ? (
-                <>
-                  <span className="text-2xl font-bold text-red-600">
-                    {productDetail.salePrice?.toLocaleString("vi-VN")}đ
-                  </span>
-                  <span className="text-lg text-gray-500 line-through">
-                    {productDetail.price?.toLocaleString("vi-VN")}đ
-                  </span>
-                </>
-              ) : (
-                <span className="text-2xl font-bold text-red-600">
-                  {productDetail.price?.toLocaleString("vi-VN")}đ
-                </span>
+          <div>
+            <div className="flex items-center gap-4 justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
+                  {productDetail.salePrice ? (
+                    <>
+                      <span className="text-2xl font-bold text-red-600">
+                        {productDetail.salePrice?.toLocaleString("vi-VN")}đ
+                      </span>
+                      <span className="text-lg text-gray-500 line-through">
+                        {productDetail.price?.toLocaleString("vi-VN")}đ
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-2xl font-bold text-red-600">
+                      {productDetail.price?.toLocaleString("vi-VN")}đ
+                    </span>
+                  )}
+                </div>
+
+                <QuantityProduct productDetail={productDetail} />
+              </div>
+              {productDetail.quantity && (
+                <span>Chỉ còn có {productDetail.quantity} sản phẩm</span>
               )}
             </div>
             {/* Nút xem cấu hình (sẽ được xử lý bằng client component) */}
-            {productDetail.configuration ? (
-              <ConfigurationModal
-                configuration={productDetail.configuration}
-                category={productDetail.category}
-              />
-            ) : (
-              <p>Sản phẩm không có cấu hình</p>
-            )}
+            <div className="mt-2.5">
+              {productDetail.configuration ? (
+                <ConfigurationModal
+                  configuration={productDetail.configuration}
+                  category={productDetail.category}
+                />
+              ) : (
+                <p>Sản phẩm không có cấu hình</p>
+              )}
+            </div>
           </div>
 
-          <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-            Thêm vào giỏ hàng
-          </button>
+          {/* Action btn */}
+          <div className="flex gap-2.5">
+            <ButtonAddToCard />
+            <button className="mt-4 w-full bg-blue-600 cursor-pointer text-white py-2 rounded-lg hover:bg-blue-500 transition-colors duration-300 flex items-center justify-center space-x-2">
+              Mua ngay
+            </button>
+          </div>
         </div>
       </div>
 
@@ -142,10 +159,7 @@ const ProductDetail = async ({ params }: { params: { slug: string } }) => {
                     </div>
 
                     {/* Add to Cart Button */}
-                    <button className="mt-4 w-full bg-black cursor-pointer text-white py-2 rounded-lg hover:bg-blue-500 transition-colors duration-300 flex items-center justify-center space-x-2">
-                      <ShoppingCartIcon className="w-5 h-5" />
-                      <span>Add to Cart</span>
-                    </button>
+                    <ButtonAddToCard />
                   </div>
                 </div>
               </Link>
