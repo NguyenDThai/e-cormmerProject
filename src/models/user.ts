@@ -8,6 +8,7 @@ export interface IUser extends Document {
   role: string;
   address?: string;
   phone?: string;
+  favorite: mongoose.Types.ObjectId[];
 }
 
 const UserSchema: Schema<IUser> = new mongoose.Schema({
@@ -37,6 +38,13 @@ const UserSchema: Schema<IUser> = new mongoose.Schema({
     type: String,
     required: false,
   },
+  favorite: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product", // Reference to the Product model
+      required: false,
+    },
+  ],
 });
 
 delete mongoose.models.User;

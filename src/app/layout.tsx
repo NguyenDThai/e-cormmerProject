@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 
 import ClientSessionProvider from "@/components/ClientSessionProvider";
 import Footer from "@/components/Footer";
+import { AppProvider } from "@/context/AppProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,10 +34,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen `}
       >
         <ClientSessionProvider>
-          <Toaster position="top-center" richColors />
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <AppProvider>
+            <Toaster position="top-center" richColors />
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </AppProvider>
         </ClientSessionProvider>
       </body>
     </html>

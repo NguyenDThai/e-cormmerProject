@@ -1,11 +1,23 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import UserButton from "@/components/user-button";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 import { CiHeart, CiSearch, CiShoppingCart } from "react-icons/ci";
+import { useAppContext } from "@/context/AppProvider";
 
 const Header = () => {
+  const { favoriteCount, fetchFavorites } = useAppContext();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session.user.email) {
+      fetchFavorites();
+    }
+  }, [status, session?.user?.email, fetchFavorites]);
+
   return (
     <div className="mb-6">
       {/* Top Banner */}
@@ -89,12 +101,23 @@ const Header = () => {
 
               {/* User Actions */}
               <div className="flex items-center space-x-2">
-                <button className="p-2 rounded-full hover:bg-gray-100 relative">
-                  <CiHeart className="h-6 w-6 text-gray-700" />
-                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    3
-                  </span>
-                </button>
+                <Link href="/favorite">
+                  {session?.user.email && favoriteCount > 0 ? (
+                    <button className="p-2 rounded-full hover:bg-gray-100 relative">
+                      <CiHeart className="h-6 w-6 text-gray-700" />
+                      <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {favoriteCount}
+                      </span>
+                    </button>
+                  ) : (
+                    <button className="p-2 rounded-full hover:bg-gray-100 relative">
+                      <CiHeart className="h-6 w-6 text-gray-700" />
+                      <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        0
+                      </span>
+                    </button>
+                  )}
+                </Link>
                 <button className="p-2 rounded-full hover:bg-gray-100 relative">
                   <CiShoppingCart className="h-6 w-6 text-gray-700" />
                   <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
