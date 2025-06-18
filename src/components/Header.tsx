@@ -1,5 +1,4 @@
 "use client";
-import { Input } from "@/components/ui/input";
 import UserButton from "@/components/user-button";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -7,6 +6,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { CiHeart, CiSearch, CiShoppingCart } from "react-icons/ci";
 import { useAppContext } from "@/context/AppProvider";
+import SearchBar from "@/components/SearchBar";
 
 const Header = () => {
   const { favoriteCount, fetchFavorites } = useAppContext();
@@ -84,14 +84,7 @@ const Header = () => {
             <div className="flex items-center space-x-4 md:space-x-6">
               {/* Search Bar */}
               <div className="relative hidden md:block">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <CiSearch className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  type="text"
-                  placeholder="Search products..."
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <SearchBar />
               </div>
 
               {/* Mobile Search Button */}

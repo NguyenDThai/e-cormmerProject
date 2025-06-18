@@ -206,7 +206,7 @@ const AddProductForm = () => {
             name="description"
             value={formData.description}
             onChange={handleInputChange}
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 h-52"
             required
           />
         </div>

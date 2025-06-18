@@ -32,8 +32,8 @@ const ImageProductDetail = ({ productDetail }: any) => {
               <Image
                 src={img || "/placeholder.jpg"}
                 alt={`${productDetail.name} - Ảnh ${index + 2}`}
-                width={300}
-                height={300}
+                width={500}
+                height={500}
                 className={`w-full h-full object-contain hover:opacity-75 transition-opacity ${
                   currentImage === img ? "ring-2 ring-blue-500" : ""
                 }`}

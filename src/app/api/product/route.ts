@@ -7,6 +7,7 @@ export async function GET(request: Request) {
     // Neu co search params ? thi lay theo loai con khong co thi render all tat ca san pham
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
+
     await connectToDatabase();
     const query = category ? { category } : {};
     const product = await Product.find(query);
