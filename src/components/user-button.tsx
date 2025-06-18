@@ -65,7 +65,7 @@ const UserButton = () => {
                       Profile
                     </DropdownMenuItem>
                   </Link>
-                  <Link href="/profile">
+                  <Link href="/favorite">
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
                       Sản phẩm yêu thích
                     </DropdownMenuItem>
@@ -87,6 +87,11 @@ const UserButton = () => {
                   <Link href="/admin/product">
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
                       Sản Phẩm
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/admin/favorites">
+                    <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
+                      Sản phẩm yêu thích
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/">

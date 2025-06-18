@@ -7,7 +7,7 @@ import Link from "next/link";
 import ImageProductDetail from "@/components/ImageProductDetail";
 import ButtonAddToCard from "@/components/ButtonAddToCard";
 import QuantityProduct from "@/components/QuantityProduct";
-import FavoriteButton from "@/components/FavoriteButton";
+// import FavoriteButton from "@/components/FavoriteButton";
 
 const getProductBySlug = async (name: string) => {
   try {

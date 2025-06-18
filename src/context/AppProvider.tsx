@@ -4,6 +4,15 @@
 import { useSession } from "next-auth/react";
 import { createContext, useCallback, useContext, useState } from "react";
 
+interface FavoriteItem {
+  productId: string;
+  productName: string;
+  productDescription: string;
+  productPrice: number;
+  productSalePrice: number;
+  userEmail: string;
+}
+
 interface FavoriteContextType {
   favorites: any[]; // Danh sách sản phẩm yêu thích
   favoriteCount: number; // Số lượng sản phẩm yêu thích
@@ -12,6 +21,8 @@ interface FavoriteContextType {
   removeFavorite: (productId: string) => Promise<boolean>; // Hàm xóa yêu thích
   isFavorite: (productId: string) => boolean; // Kiểm tra sản phẩm có trong yêu thích không
   user: any;
+  adminFavorites: FavoriteItem[];
+  fetchAdminFavorites: () => Promise<void>;
 }
 
 const AppContext = createContext<FavoriteContextType | undefined>(undefined);
@@ -20,6 +31,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const [favorites, setFavorites] = useState<any[]>([]);
   const [favoriteCount, setFavoriteCount] = useState(0);
+  const [adminFavorites, setAdminFavorites] = useState<FavoriteItem[]>([]);
 
   const user = session?.user;
 
@@ -46,6 +58,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session?.user?.email]);
 
+  const fetchAdminFavorites = useCallback(async () => {
+    if (!session?.user?.email) {
+      setAdminFavorites([]);
+      return;
+    }
+    try {
+      const response = await fetch("/api/favorites/admin", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        console.error("Không thể lấy danh sách yêu thích admin");
+        return;
+      }
+
+      const data = await response.json();
+      setAdminFavorites(data.favorites || []);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách yêu thích admin:", error);
+    }
+  }, [session?.user?.email]);
+
   // Thêm sản phẩm yêu thích
   const addFavorite = useCallback(
     async (productId: string): Promise<boolean> => {
@@ -59,6 +92,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         });
         if (response.ok) {
           await fetchFavorites(); // Refetch để cập nhật state
+          await fetchAdminFavorites();
           return true;
         } else {
           console.error("Failed to add favorite");
@@ -69,7 +103,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
     },
-    [session?.user?.email, fetchFavorites]
+    [session?.user?.email, fetchFavorites, fetchAdminFavorites]
   );
 
   // Xóa sản phẩm yêu thích
@@ -85,6 +119,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         });
         if (response.ok) {
           await fetchFavorites(); // Refetch để cập nhật state
+          await fetchAdminFavorites();
           return true;
         } else {
           console.error("Failed to remove favorite");
@@ -95,7 +130,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
     },
-    [session?.user?.email, fetchFavorites]
+    [session?.user?.email, fetchFavorites, fetchAdminFavorites]
   );
 
   // Kiểm tra sản phẩm có trong yêu thích không
@@ -115,6 +150,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isFavorite,
         favoriteCount,
         favorites,
+        adminFavorites,
+        fetchAdminFavorites,
         user,
       }}
     >
