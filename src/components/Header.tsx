@@ -66,15 +66,15 @@ const Header = () => {
                 </span>
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
               </Link>
-              <Link href="#" className="relative group">
+              <Link href="/about" className="relative group">
                 <span className="text-gray-900 font-medium hover:text-blue-600 transition-colors">
-                  About
+                  Về chúng tôi
                 </span>
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
               </Link>
-              <Link href="#" className="relative group">
+              <Link href="/contact" className="relative group">
                 <span className="text-gray-900 font-medium hover:text-blue-600 transition-colors">
-                  Contact
+                  Liên hệ với chúng tôi
                 </span>
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
               </Link>
