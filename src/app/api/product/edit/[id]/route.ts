@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import mongoose, { FlattenMaps, Types } from "mongoose";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/product";
-import { ObjectId } from "mongodb";
 import { v2 as cloudinary } from "cloudinary";
 
 interface IProduct {
@@ -35,7 +34,7 @@ cloudinary.config({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -73,7 +72,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -269,12 +268,12 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
 
-    if (!ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: "Invalid product ID" },
         { status: 400 }
@@ -282,7 +281,7 @@ export async function DELETE(
     }
 
     await connectToDatabase();
-    const result = await Product.deleteOne({ _id: new ObjectId(id) });
+    const result = await Product.deleteOne({ _id: new mongoose.Types.ObjectId(id) });
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

@@ -31,7 +31,7 @@ const relatedProduct = async (category: string) => {
   }
 };
 
-const ProductDetail = async ({ params }: { params: { slug: string } }) => {
+const ProductDetail = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const productDetail = await getProductBySlug(decodedSlug);

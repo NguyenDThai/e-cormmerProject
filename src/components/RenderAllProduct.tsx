@@ -8,12 +8,13 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import FavoriteButton from "@/components/FavoriteButton";
+import { useFlashSale } from "@/hooks/useFlashSale";
 
 export type ProductList = [
   {
     _id: string;
     name: string;
-    images: string;
+    images: string[];
     price: number;
     salePrice: number;
   }
@@ -22,23 +23,44 @@ export type ProductList = [
 const RenderAllProduct = () => {
   const [productList, setProductList] = useState<ProductList | []>([]);
   const { data: session } = useSession();
+  const { activeFlashSale } = useFlashSale();
 
   useEffect(() => {
     const fetchProductList = async () => {
       try {
         const response = await fetch("/api/product");
-        const dataProduct = await response.json();
-
+        
         if (!response.ok) {
-          throw new Error("Da co loi xay ra khi lay san pham tu csdl");
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        setProductList(dataProduct.product);
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+
+        const dataProduct = await response.json();
+        
+        let products = dataProduct.product || [];
+        
+        // Lọc bỏ sản phẩm đang có trong flash sale để tránh trùng lặp
+        if (activeFlashSale && activeFlashSale.products && activeFlashSale.products.length > 0) {
+          const flashSaleProductIds = activeFlashSale.products.map((p: any) => 
+            typeof p === 'string' ? p : p._id || p.productId
+          );
+          products = products.filter((product: any) => 
+            !flashSaleProductIds.includes(product._id)
+          );
+        }
+        
+        setProductList(products);
       } catch (error: any) {
-        console.error(error.message);
+        console.error("Error fetching products:", error.message);
+        setProductList([]); // Set empty array on error
       }
     };
     fetchProductList();
-  }, []);
+  }, [activeFlashSale]);
 
   return (
     <div className="container mx-auto px-4 py-8 ">
@@ -52,7 +74,7 @@ const RenderAllProduct = () => {
               {/* Product Image */}
               <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
                 <Image
-                  src={product?.images[0]}
+                  src={product?.images && product.images.length > 0 ? product.images[0] : '/placeholder-product.jpg'}
                   alt={product?.name}
                   width={200}
                   height={200}

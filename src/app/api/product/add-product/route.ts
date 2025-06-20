@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Product from "@/models/product";
 import { v2 as cloudinary } from "cloudinary";
-
-// config cloudinary
+import { NextResponse } from "next/server";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -20,7 +17,7 @@ export async function GET(request: Request) {
     const ram = searchParams.get("ram");
     const storage = searchParams.get("storage");
 
-    const query: any = {};
+    const query: Record<string, unknown> = {};
     if (category) query.category = category;
     if (ram) query["configuration.ram"] = parseInt(ram);
     if (storage) query["configuration.storage"] = parseInt(storage);
@@ -37,7 +34,7 @@ export async function GET(request: Request) {
     }));
 
     return NextResponse.json({ products: formattedProducts }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500 }
@@ -54,12 +51,12 @@ export async function POST(request: Request) {
     const category = formData.get("category") as string;
     const price = formData.get("price") as string;
     const description = formData.get("description") as string;
-    const quantity = formData.get("quantity") as string; // Added quantity
+    const quantity = formData.get("quantity") as string;
     const salePrice = formData.get("salePrice")
       ? parseFloat(formData.get("salePrice") as string)
       : undefined;
     const images = formData.getAll("images") as File[];
-    // xu ly cau hinh
+
     const configuration = formData.get("configuration")
       ? JSON.parse(formData.get("configuration") as string)
       : {};
@@ -71,7 +68,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Kiem tra loai san pham neu khong co trong list thi se bao loi
     const validCategories = [
       "phone",
       "laptop",
@@ -85,13 +81,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid category" }, { status: 400 });
     }
 
-    // Validate quantity
     const parsedQuantity = parseInt(quantity);
     if (isNaN(parsedQuantity) || parsedQuantity < 0) {
       return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
     }
 
-    // upload hinh anh len cloudinary
     const imageUrls = [];
     for (const image of images) {
       if (image.size > 0) {
@@ -107,17 +101,15 @@ export async function POST(request: Request) {
           );
           uploadStream.end(buffer);
         });
-        imageUrls.push((uploadResult as any).secure_url);
+        imageUrls.push((uploadResult as { secure_url: string }).secure_url);
       }
     }
 
-    // Loai bo cac truong trong
     const cleanedConfiguration = Object.fromEntries(
       Object.entries(configuration).filter(
-        ([_, v]) => v !== "" && v !== null && v !== undefined
+        ([, v]) => v !== "" && v !== null && v !== undefined
       )
     );
-    // tao san pham tren mongoDB
 
     const product = await Product.create({
       name,

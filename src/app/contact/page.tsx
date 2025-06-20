@@ -47,7 +47,7 @@ export default function ContactPage() {
         phone: "",
         message: "",
       });
-    } catch (error) {
+    } catch {
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
@@ -378,7 +378,7 @@ export default function ContactPage() {
                   width="100%"
                   height="300"
                   style={{ border: 0 }}
-                  allowFullScreen=""
+                  allowFullScreen
                   loading="lazy"
                   className="rounded-xl"
                   title="Google Maps"
