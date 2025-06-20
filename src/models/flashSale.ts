@@ -34,12 +34,6 @@ const FlashSaleSchema: Schema<IFlashSale> = new mongoose.Schema({
   endTime: {
     type: Date,
     required: true,
-    validate: {
-      validator: function(this: IFlashSale, endTime: Date) {
-        return endTime > this.startTime;
-      },
-      message: "End time must be after start time"
-    }
   },
   isActive: {
     type: Boolean,

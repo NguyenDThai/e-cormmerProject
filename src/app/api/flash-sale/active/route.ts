@@ -34,23 +34,28 @@ export async function GET() {
 
     const flashSalesWithUpdatedProducts = await Promise.all(
       activeFlashSales.map(async (sale) => {
-        const saleObj = sale.toObject ? sale.toObject() : sale;
-        const updatedProducts = (saleObj.products as unknown[]).map((product) => {
-          // Nếu product là ObjectId, bỏ qua
-          if (!product || typeof product !== "object" || !("price" in product)) return product;
-          if (!("salePrice" in product) || product.salePrice === 0) {
-            const price = (product as { price: number }).price;
-            const calculatedSalePrice = (saleObj as { calculateSalePrice?: (price: number) => number }).calculateSalePrice ? (saleObj as { calculateSalePrice: (price: number) => number }).calculateSalePrice(price) : 0;
-            return {
-              ...product,
-              salePrice: calculatedSalePrice,
-              originalPrice: price,
-              discountPercent: saleObj.discountPercent,
-            };
-          }
+        // Ensure products are populated before processing
+        if (sale.products.length > 0 && typeof sale.products[0] === 'string') {
+          await sale.populate({
+            path: 'products',
+            select: 'name brand category images price salePrice quantity description'
+          });
+        } else if (sale.products.length > 0 && sale.products[0].constructor.name === 'ObjectId') {
+            await sale.populate({
+                path: 'products',
+                select: 'name brand category images price salePrice quantity description'
+            });
+        }
+
+        const saleObj = sale.toObject();
+        const updatedProducts = saleObj.products.map((product: any) => {
+          if (!product || typeof product !== "object" || !product.price) return product;
+
+          const calculatedSalePrice = Math.round(product.price * (1 - saleObj.discountPercent / 100));
+
           return {
             ...product,
-            salePrice: product.salePrice,
+            salePrice: product.salePrice || calculatedSalePrice,
             originalPrice: product.price,
             discountPercent: saleObj.discountPercent,
           };

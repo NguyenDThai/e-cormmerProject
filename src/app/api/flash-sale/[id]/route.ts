@@ -115,6 +115,13 @@ export async function PUT(
       }
     }
 
+    const oldProductIds = existingFlashSale.products.map(p => p.toString());
+    const newProductIds = products ? products : oldProductIds;
+
+    // Logic to handle product price updates
+    const productsToAdd = newProductIds.filter((id: string) => !oldProductIds.includes(id));
+    const productsToRemove = oldProductIds.filter((id: string) => !newProductIds.includes(id));
+
     // Update flash sale
     const updateData: Record<string, unknown> = {};
     if (name) updateData.name = name;
@@ -134,29 +141,41 @@ export async function PUT(
     .populate('products', 'name brand category images price salePrice quantity')
     .populate('createdBy', 'name email');
 
-    // Update product sale prices if discount or products changed
-    if ((discountPercent !== undefined || products) && updatedFlashSale) {
-      const productsToUpdate = products || existingFlashSale.products;
-      const newDiscountPercent = discountPercent !== undefined ? discountPercent : existingFlashSale.discountPercent;
-      
-      if (updatedFlashSale.isActive) {
-        // Apply new sale prices
-        await Promise.all(
-          productsToUpdate.map(async (productId: string) => {
-            const product = await Product.findById(productId);
-            if (product) {
-              const salePrice = Math.round(product.price * (1 - newDiscountPercent / 100));
-              await Product.findByIdAndUpdate(productId, { salePrice });
-            }
-          })
-        );
-      } else {
-        // Remove sale prices if inactive
+    if (!updatedFlashSale) {
+        return NextResponse.json({ error: "Failed to update flash sale" }, { status: 500 });
+    }
+    
+    // Remove salePrice from products that are no longer in the flash sale
+    if (productsToRemove.length > 0) {
         await Product.updateMany(
-          { _id: { $in: productsToUpdate } },
-          { $unset: { salePrice: 1 } }
+            { _id: { $in: productsToRemove } },
+            { $unset: { salePrice: "" } }
         );
-      }
+    }
+
+    // Update product sale prices for new and existing products
+    const productsToUpdate = newProductIds;
+    const newDiscountPercent = discountPercent !== undefined ? discountPercent : existingFlashSale.discountPercent;
+
+    // Determine the final active state
+    const finalIsActive = isActive !== undefined ? isActive : existingFlashSale.isActive;
+
+    if (finalIsActive) {
+      await Promise.all(
+        productsToUpdate.map(async (productId: string) => {
+          const product = await Product.findById(productId);
+          if (product) {
+            const salePrice = Math.round(product.price * (1 - newDiscountPercent / 100));
+            await Product.findByIdAndUpdate(productId, { salePrice });
+          }
+        })
+      );
+    } else {
+      // If the entire sale is made inactive, remove salePrice from all associated products
+      await Product.updateMany(
+        { _id: { $in: productsToUpdate } },
+        { $unset: { salePrice: "" } }
+      );
     }
 
     return NextResponse.json({

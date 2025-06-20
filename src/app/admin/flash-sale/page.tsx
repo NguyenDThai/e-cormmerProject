@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { FlashSale } from "@/types/flashSale";
+import { FlashSaleForm } from "../_components/FlashSaleForm";
 
 const FlashSaleManagement = () => {
   const [flashSales, setFlashSales] = useState<FlashSale[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [selectedFlashSale, setSelectedFlashSale] = useState<FlashSale | null>(null);
 
   useEffect(() => {
     fetchFlashSales();
@@ -31,7 +35,7 @@ const FlashSaleManagement = () => {
   const handleToggleActive = async (id: string, isActive: boolean) => {
     try {
       const response = await fetch(`/api/flash-sale/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -70,6 +74,53 @@ const FlashSaleManagement = () => {
     }
   };
 
+  const handleCreateNew = () => {
+    setSelectedFlashSale(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (flashSale: FlashSale) => {
+    setSelectedFlashSale(flashSale);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (data: any) => {
+    setIsSaving(true);
+    const url = selectedFlashSale ? `/api/flash-sale/${selectedFlashSale._id}` : '/api/flash-sale';
+    const method = selectedFlashSale ? 'PUT' : 'POST';
+
+    // Convert local datetime strings to UTC ISO strings for the API
+    const apiData = {
+      ...data,
+      startTime: data.startTime ? new Date(data.startTime).toISOString() : undefined,
+      endTime: data.endTime ? new Date(data.endTime).toISOString() : undefined,
+      products: data.productIds,
+    };
+    delete apiData.productIds;
+
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save flash sale');
+      }
+
+      setIsModalOpen(false);
+      fetchFlashSales();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString('vi-VN', {
       year: 'numeric',
@@ -99,10 +150,27 @@ const FlashSaleManagement = () => {
     <div className="container mx-auto p-6 min-h-screen">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Quản lý Flash Sale</h1>
-        <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+        <button
+          onClick={handleCreateNew}
+          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+        >
           Tạo Flash Sale mới
         </button>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-6">{selectedFlashSale ? 'Chỉnh sửa Flash Sale' : 'Tạo Flash Sale mới'}</h2>
+            <FlashSaleForm
+              initialData={selectedFlashSale}
+              onSave={handleSave}
+              onCancel={() => setIsModalOpen(false)}
+              isSaving={isSaving}
+            />
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -182,7 +250,9 @@ const FlashSaleManagement = () => {
                     {flashSale.isActive ? 'Tạm dừng' : 'Kích hoạt'}
                   </button>
                   
-                  <button className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors">
+                  <button
+                    onClick={() => handleEdit(flashSale)}
+                    className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors">
                     Chỉnh sửa
                   </button>
                   
