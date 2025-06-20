@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 interface Product {
   _id: string;
   name: string;
-  images: [];
+  images: string[];
   price: number;
   salePrice: number;
   rating?: number;
