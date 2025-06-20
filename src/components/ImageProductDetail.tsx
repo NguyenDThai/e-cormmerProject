@@ -1,9 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
 import { useState } from "react";
 
-const ImageProductDetail = ({ productDetail }: any) => {
+interface ProductDetail {
+  name: string;
+  images: string[];
+}
+
+const ImageProductDetail = ({
+  productDetail,
+}: {
+  productDetail: ProductDetail;
+}) => {
   const [currentImage, setCurrentImage] = useState(
     productDetail.images[0] || "/placeholder.jpg"
   );
@@ -23,7 +31,7 @@ const ImageProductDetail = ({ productDetail }: any) => {
       <div>
         <h2 className="text-lg font-semibold mb-2">Hình ảnh khác</h2>
         <div className="grid grid-cols-4 gap-2">
-          {productDetail.images.map((img, index) => (
+          {productDetail.images.map((img: string, index: number) => (
             <div
               key={index}
               className="relative w-full aspect-square bg-gray-50 rounded-lg overflow-hidden"

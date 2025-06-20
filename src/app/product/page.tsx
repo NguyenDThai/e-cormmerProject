@@ -4,20 +4,20 @@ import Link from "next/link";
 import { CiHeart } from "react-icons/ci";
 import Image from "next/image";
 import ButtonAddToCard from "@/components/ButtonAddToCard";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 interface Product {
   _id: string;
   name: string;
-  images: [];
+  images: string[];
   price: number;
   salePrice: number;
   rating?: number;
 }
 
-const CategoryProduct = () => {
+const CategoryProductContent = () => {
   const { data: session } = useSession();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -100,4 +100,12 @@ const CategoryProduct = () => {
   );
 };
 
-export default CategoryProduct;
+const CategoryProductPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CategoryProductContent />
+    </Suspense>
+  );
+};
+
+export default CategoryProductPage;

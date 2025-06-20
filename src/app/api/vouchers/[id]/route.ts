@@ -7,7 +7,7 @@ export async function DELETE(
   {
     params,
   }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
   }
 ) {
   try {
@@ -34,7 +34,7 @@ export async function PUT(
   {
     params,
   }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
   }
 ) {
   try {

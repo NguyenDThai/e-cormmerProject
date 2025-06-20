@@ -1,6 +1,6 @@
 import EditProductForm from "@/app/admin/_components/EditProductForm";
 
-const EditProductPage = async ({ params }: { params: { id: string } }) => {
+const EditProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   return (
     <>

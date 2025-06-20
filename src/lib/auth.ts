@@ -115,7 +115,7 @@ export const authOptions: NextAuthOptions = {
           token.id = dbUser._id.toString();
           token.role = dbUser.role;
           token.name = dbUser.name || token.name;
-          token.picture = dbUser.image || profile?.image || profile?.picture;
+          token.picture = dbUser.image || profile?.image;
         } else {
           console.error("User not found in database:", token.email);
         }
