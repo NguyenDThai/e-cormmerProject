@@ -303,7 +303,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
           >
             <option value="phone">Phone</option>
             <option value="laptop">Laptop</option>
-            <option value="airpod">Airpod</option>
+            <option value="airport">Airport</option>
             <option value="mouse">Mouse</option>
             <option value="gaming">Gaming</option>
             <option value="camera">Camera</option>
@@ -382,7 +382,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
                     type="button"
                     variant="destructive"
                     size="sm"
-                    className="absolute top-0 right-0"
+                    className="absolute top-0 right-0 bg-red-500"
                     onClick={() => removeImage(index, false)}
                   >
                     X
@@ -402,7 +402,7 @@ const EditProductForm = ({ productId }: EditProductFormProps) => {
                     type="button"
                     variant="destructive"
                     size="sm"
-                    className="absolute top-0 right-0"
+                    className="absolute top-0 right-0 bg-red-500"
                     onClick={() => removeImage(index, true)}
                   >
                     X

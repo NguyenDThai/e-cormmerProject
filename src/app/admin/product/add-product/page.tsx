@@ -248,7 +248,7 @@ const AddProductForm = () => {
                     type="button"
                     variant="destructive"
                     size="sm"
-                    className="absolute top-0 right-4"
+                    className="absolute top-0 right-4 bg-red-500"
                     onClick={() => removeFile(index)}
                   >
                     <FaRegTrashAlt />

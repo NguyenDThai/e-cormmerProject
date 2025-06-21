@@ -29,7 +29,7 @@ const RenderAllProduct = () => {
     const fetchProductList = async () => {
       try {
         const response = await fetch("/api/product");
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -40,19 +40,23 @@ const RenderAllProduct = () => {
         }
 
         const dataProduct = await response.json();
-        
+
         let products = dataProduct.product || [];
-        
+
         // Lọc bỏ sản phẩm đang có trong flash sale để tránh trùng lặp
-        if (activeFlashSale && activeFlashSale.products && activeFlashSale.products.length > 0) {
-          const flashSaleProductIds = activeFlashSale.products.map((p: any) => 
-            typeof p === 'string' ? p : p._id || p.productId
+        if (
+          activeFlashSale &&
+          activeFlashSale.products &&
+          activeFlashSale.products.length > 0
+        ) {
+          const flashSaleProductIds = activeFlashSale.products.map((p: any) =>
+            typeof p === "string" ? p : p._id || p.productId
           );
-          products = products.filter((product: any) => 
-            !flashSaleProductIds.includes(product._id)
+          products = products.filter(
+            (product: any) => !flashSaleProductIds.includes(product._id)
           );
         }
-        
+
         setProductList(products);
       } catch (error: any) {
         console.error("Error fetching products:", error.message);
@@ -74,7 +78,11 @@ const RenderAllProduct = () => {
               {/* Product Image */}
               <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
                 <Image
-                  src={product?.images && product.images.length > 0 ? product.images[0] : '/placeholder-product.jpg'}
+                  src={
+                    product?.images && product.images.length > 0
+                      ? product.images[0]
+                      : "/placeholder-product.jpg"
+                  }
                   alt={product?.name}
                   width={200}
                   height={200}

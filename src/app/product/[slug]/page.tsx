@@ -31,12 +31,16 @@ const relatedProduct = async (category: string) => {
   }
 };
 
-const ProductDetail = async ({ params }: { params: Promise<{ slug: string }> }) => {
+const ProductDetail = async ({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) => {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const productDetail = await getProductBySlug(decodedSlug);
   // Api loc theo loai san pham để render tất cả sản phẩm có liên quan (vd: điện thoại thì render tất cả các sản phẩm liên quan đến điện thoại)
-  const categoryProduct = await relatedProduct(productDetail.category);
+  const categoryProduct = await relatedProduct(productDetail?.category);
 
   if (!productDetail) {
     return <div>Product not found</div>;
