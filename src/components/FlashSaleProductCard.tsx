@@ -20,7 +20,7 @@ const FlashSaleProductCard: React.FC<FlashSaleProductCardProps> = ({
 
   return (
     <Link href={`/product/${product.name}`}>
-      <div className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+      <div className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden h-full">
         {/* Flash Sale Badge */}
         <div className="absolute top-2 left-2 z-10">
           <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
