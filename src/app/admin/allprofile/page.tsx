@@ -108,7 +108,7 @@ const AllProfile = () => {
       />
       <div className="flex justify-center mt-4">
         <Link href="/">
-          <Button>Về trang chủ</Button>
+          <Button className="cursor-pointer">Về trang chủ</Button>
         </Link>
       </div>
     </div>

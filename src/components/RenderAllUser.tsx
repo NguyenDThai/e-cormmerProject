@@ -30,57 +30,54 @@ export function RenderAllUser({
   const { data: session } = useSession();
 
   return (
-    <Table className="w-full max-w-5xl mx-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mt-6 shadow-sm">
-      <TableHeader className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <TableRow>
-          <TableHead className="w-[200px] px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+    <Table className="w-full max-w-6xl mx-auto border border-gray-100 rounded-lg overflow-hidden shadow-sm bg-white mt-3.5">
+      <TableHeader className="bg-gray-50 border-b border-gray-200">
+        <TableRow className="hover:bg-transparent">
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Họ và tên
           </TableHead>
-          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Email
           </TableHead>
-          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-            Địa Chỉ
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+            Địa chỉ
           </TableHead>
-          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-            Điện Thoại
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+            Điện thoại
           </TableHead>
-          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+          <TableHead className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
             Vai trò
           </TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <TableBody className="bg-white divide-y divide-gray-100">
         {user.map((user) => (
           <TableRow
             key={user._id}
-            className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+            className="hover:bg-gray-50 transition-colors"
           >
             <TableCell className="px-6 py-4 whitespace-nowrap">
               <div className="flex items-center">
-                <div className="ml-0">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
+                  <span className="text-blue-600 font-medium">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="ml-4">
+                  <div className="text-sm font-medium text-gray-900">
                     {user.name}
                   </div>
                 </div>
               </div>
             </TableCell>
-            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
               {user.email}
             </TableCell>
-            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-              {user?.address || (
-                <span className="text-gray-400 dark:text-gray-500">
-                  Chưa cập nhật
-                </span>
-              )}
+            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+              {user?.address || <span className="text-gray-400">—</span>}
             </TableCell>
-            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-              {user?.phone || (
-                <span className="text-gray-400 dark:text-gray-500">
-                  Chưa cập nhật
-                </span>
-              )}
+            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+              {user?.phone || <span className="text-gray-400">—</span>}
             </TableCell>
             <TableCell className="px-6 py-4 whitespace-nowrap">
               {session?.user?.role === "admin" ? (
@@ -91,24 +88,34 @@ export function RenderAllUser({
                   defaultValue={user.role}
                   disabled={loading === user._id}
                 >
-                  <SelectTrigger className="w-[120px] bg-white dark:bg-gray-800">
-                    <SelectValue placeholder="Chọn vai trò" />
+                  <SelectTrigger className="w-[120px] bg-white border-gray-300 hover:border-gray-400">
+                    <SelectValue placeholder="Vai trò" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
+                  <SelectContent className="border-gray-200 bg-white shadow-lg">
+                    <SelectItem
+                      value="admin"
+                      className="text-sm hover:bg-blue-50 text-blue-600"
+                    >
+                      Admin
+                    </SelectItem>
+                    <SelectItem
+                      value="user"
+                      className="text-sm hover:bg-blue-50"
+                    >
+                      User
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
                 <span
-                  className={`px-3 py-1 inline-flex text-sm leading-5 font-medium rounded-full 
+                  className={`px-3 py-1.5 inline-flex text-xs font-medium rounded-full 
                 ${
                   user.role === "admin"
-                    ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-200"
-                    : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200"
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-gray-100 text-gray-800"
                 }`}
                 >
-                  {user.role}
+                  {user.role === "admin" ? "Quản trị" : "Thành viên"}
                 </span>
               )}
             </TableCell>
