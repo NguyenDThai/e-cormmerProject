@@ -19,9 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className="antialiased h-screen font-sans"
-      >
+      <body className="antialiased h-screen font-sans">
         <ClientSessionProvider>
           <AppProvider>
             <Toaster position="top-center" richColors />

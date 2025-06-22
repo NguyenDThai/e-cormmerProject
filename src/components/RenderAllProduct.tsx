@@ -122,7 +122,7 @@ const RenderAllProduct = () => {
                 </div>
 
                 {/* Add to Cart Button */}
-                <ButtonAddToCard />
+                <ButtonAddToCard productId={product._id} />
               </div>
             </div>
           </Link>

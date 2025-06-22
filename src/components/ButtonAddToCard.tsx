@@ -1,11 +1,38 @@
 "use client";
+import { useAppContext } from "@/context/AppProvider";
 import { ShoppingCartIcon } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 
-const ButtonAddToCard = () => {
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+interface ButtonAddToCardProps {
+  productId: string;
+}
+
+const ButtonAddToCard = ({ productId }: ButtonAddToCardProps) => {
+  const { quantity, fetchCart } = useAppContext();
+
+  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    alert("Add to Cart");
+    try {
+      const response = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId,
+          quantity,
+        }),
+      });
+
+      if (response.ok) {
+        // Hiển thị thông báo thành công
+        toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`);
+        fetchCart();
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
   return (
     <button

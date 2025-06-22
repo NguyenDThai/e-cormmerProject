@@ -2,7 +2,14 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { CartItem } from "@/models/cart";
 
 interface FavoriteItem {
   productId: string;
@@ -13,19 +20,34 @@ interface FavoriteItem {
   userEmail: string;
 }
 
-interface FavoriteContextType {
+interface AppContextType {
   favorites: any[]; // Danh sách sản phẩm yêu thích
   favoriteCount: number; // Số lượng sản phẩm yêu thích
   fetchFavorites: () => Promise<void>; // Hàm fetch danh sách yêu thích
   addFavorite: (productId: string) => Promise<boolean>; // Hàm thêm yêu thích
   removeFavorite: (productId: string) => Promise<boolean>; // Hàm xóa yêu thích
   isFavorite: (productId: string) => boolean; // Kiểm tra sản phẩm có trong yêu thích không
-  user: any;
   adminFavorites: FavoriteItem[];
   fetchAdminFavorites: () => Promise<void>;
+
+  // Cart functionality
+  cartItems: CartItem[];
+  cartTotal: number;
+  cartItemCount: number;
+  addToCart: (productId: string, quantity?: number) => Promise<void>;
+  removeFromCart: (productId: string) => Promise<void>;
+  updateCartItemQuantity: (
+    productId: string,
+    quantity: number
+  ) => Promise<void>;
+  clearCart: () => Promise<void>;
+  fetchCart: () => Promise<void>;
+
+  quantity?: number; // Số lượng sản phẩm trong giỏ hàng
+  setQuantity?: (quantity: number) => void; // Hàm để cập nhật số lượng sản phẩm
 }
 
-const AppContext = createContext<FavoriteContextType | undefined>(undefined);
+const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
@@ -33,7 +55,133 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [adminFavorites, setAdminFavorites] = useState<FavoriteItem[]>([]);
 
-  const user = session?.user;
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartTotal, setCartTotal] = useState(0);
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  // so luong san pham
+
+  const [quantity, setQuantity] = useState(1);
+
+  // Fetch giỏ hàng
+
+  const fetchCart = useCallback(async () => {
+    if (!session?.user?.email) {
+      setCartItems([]);
+      setCartTotal(0);
+      setCartItemCount(0);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/cart");
+      if (response.ok) {
+        const { cart } = await response.json();
+        setCartItems(cart.items || []);
+        setCartTotal(cart.total || 0);
+        setCartItemCount(
+          cart.items?.reduce(
+            (sum: number, item: CartItem) => sum + item.quantity,
+            0
+          ) || 0
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch cart:", error);
+    }
+  }, [session?.user?.email]);
+
+  // Thêm sản phẩm vào giỏ hàng
+  const addToCart = useCallback(
+    async (productId: string, quantity: number = 1) => {
+      try {
+        const response = await fetch("/api/cart/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId, quantity }),
+        });
+
+        if (response.ok) {
+          await fetchCart(); // Refresh cart data
+        }
+      } catch (error) {
+        console.error("Failed to add to cart:", error);
+      }
+    },
+    [fetchCart]
+  );
+
+  // Hàm xóa sản phẩm khỏi giỏ hàng
+  const removeFromCart = useCallback(
+    async (productId: string) => {
+      try {
+        const response = await fetch(
+          `/api/cart/remove?productId=${productId}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          await fetchCart(); // Refresh lại giỏ hàng
+          // Có thể thêm toast thông báo ở đây
+        }
+      } catch (error) {
+        console.error("Failed to remove item from cart:", error);
+      }
+    },
+    [fetchCart]
+  );
+
+  // / Hàm cập nhật số lượng sản phẩm
+  const updateCartItemQuantity = useCallback(
+    async (productId: string, quantity: number) => {
+      if (quantity < 1) return;
+
+      try {
+        const response = await fetch("/api/cart/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ productId, quantity }),
+        });
+
+        if (response.ok) {
+          await fetchCart(); // Refresh lại giỏ hàng
+        }
+      } catch (error) {
+        console.error("Failed to update cart item quantity:", error);
+      }
+    },
+    [fetchCart]
+  );
+
+  // / Hàm xóa toàn bộ giỏ hàng
+  const clearCart = useCallback(async () => {
+    try {
+      const response = await fetch("/api/cart/clear", {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        await fetchCart(); // Refresh lại giỏ hàng
+        // Có thể thêm toast thông báo ở đây
+      }
+    } catch (error) {
+      console.error("Failed to clear cart:", error);
+    }
+  }, [fetchCart]);
+
+  // Tu dong fresh cart khi session thay doi
+  useEffect(() => {
+    fetchCart();
+  }, [session?.user, fetchCart]);
 
   // Fetch danh sách yêu thích
   const fetchFavorites = useCallback(async () => {
@@ -152,7 +300,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         favorites,
         adminFavorites,
         fetchAdminFavorites,
-        user,
+        // Cart functionality
+        cartItems,
+        cartTotal,
+        cartItemCount,
+        addToCart,
+        removeFromCart,
+        updateCartItemQuantity,
+        clearCart,
+        fetchCart,
+
+        // So luong san pham
+        quantity,
+        setQuantity,
       }}
     >
       {children}

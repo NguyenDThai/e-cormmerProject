@@ -45,6 +45,7 @@ const ProductDetail = async ({
   if (!productDetail) {
     return <div>Product not found</div>;
   }
+  console.log("Product Detail:", productDetail);
 
   return (
     <div className="container mx-auto py-8 px-4 h-full">
@@ -98,7 +99,7 @@ const ProductDetail = async ({
 
           {/* Action btn */}
           <div className="flex gap-2.5">
-            <ButtonAddToCard />
+            <ButtonAddToCard productId={productDetail._id} />
             <button className="mt-4 w-full bg-blue-600 cursor-pointer text-white py-2 rounded-lg hover:bg-blue-500 transition-colors duration-300 flex items-center justify-center space-x-2">
               Mua ngay
             </button>
@@ -160,7 +161,7 @@ const ProductDetail = async ({
                     </div>
 
                     {/* Add to Cart Button */}
-                    <ButtonAddToCard />
+                    <ButtonAddToCard productId={product._id.toString()} />
                   </div>
                 </div>
               </Link>

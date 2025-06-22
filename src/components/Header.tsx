@@ -8,7 +8,7 @@ import { useAppContext } from "@/context/AppProvider";
 import SearchBar from "@/components/SearchBar";
 
 const Header = () => {
-  const { favoriteCount, fetchFavorites } = useAppContext();
+  const { favoriteCount, fetchFavorites, cartItemCount } = useAppContext();
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const Header = () => {
                   <button className="p-2 rounded-full hover:bg-gray-100 relative transition-colors group cursor-pointer">
                     <CiShoppingCart className="h-5 w-5 text-gray-700 group-hover:text-blue-600" />
                     <span className="absolute -top-0.5 -right-0.5 bg-blue-600 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                      2
+                      {cartItemCount || 0}
                     </span>
                   </button>
                 </Link>

@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { FiMinus } from "react-icons/fi";
 import { FaPlus } from "react-icons/fa6";
+import { useAppContext } from "@/context/AppProvider";
 
 const QuantityProduct = ({ productDetail }: any) => {
   const productQuantity = productDetail.quantity;
-
-  const [quantity, setQuantity] = useState(1);
+  const { quantity = 1, setQuantity } = useAppContext();
 
   const handleClickPlus = () => {
     if (quantity < productQuantity) {
-      setQuantity((prev) => prev + 1);
+      if (setQuantity) {
+        setQuantity(quantity + 1);
+      }
     } else {
       return <span className="text-red-500">Số lượng sản phẩm đã hết</span>;
     }
@@ -21,7 +23,9 @@ const QuantityProduct = ({ productDetail }: any) => {
     if (quantity <= 0) {
       return;
     }
-    setQuantity((prev) => prev - 1);
+    if (setQuantity) {
+      setQuantity(quantity - 1);
+    }
   };
   return (
     <div className="flex items-center border border-gray-300 rounded-full px-3 py-1">
