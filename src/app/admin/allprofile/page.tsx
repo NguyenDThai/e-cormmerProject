@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { RenderAllUser } from "@/components/RenderAllUser";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -106,11 +104,6 @@ const AllProfile = () => {
         updateUserRole={handleRoleChange}
         loading={loading}
       />
-      <div className="flex justify-center mt-4">
-        <Link href="/">
-          <Button className="cursor-pointer">Về trang chủ</Button>
-        </Link>
-      </div>
     </div>
   );
 };
