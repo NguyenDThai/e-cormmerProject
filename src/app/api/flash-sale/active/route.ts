@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import connectToDatabase from "@/lib/mongodb";
 import FlashSaleModel from "@/models/flashSale";
 import { NextResponse } from "next/server";
@@ -35,23 +36,31 @@ export async function GET() {
     const flashSalesWithUpdatedProducts = await Promise.all(
       activeFlashSales.map(async (sale) => {
         // Ensure products are populated before processing
-        if (sale.products.length > 0 && typeof sale.products[0] === 'string') {
+        if (sale.products.length > 0 && typeof sale.products[0] === "string") {
           await sale.populate({
-            path: 'products',
-            select: 'name brand category images price salePrice quantity description'
+            path: "products",
+            select:
+              "name brand category images price salePrice quantity description",
           });
-        } else if (sale.products.length > 0 && sale.products[0].constructor.name === 'ObjectId') {
-            await sale.populate({
-                path: 'products',
-                select: 'name brand category images price salePrice quantity description'
-            });
+        } else if (
+          sale.products.length > 0 &&
+          sale.products[0].constructor.name === "ObjectId"
+        ) {
+          await sale.populate({
+            path: "products",
+            select:
+              "name brand category images price salePrice quantity description",
+          });
         }
 
         const saleObj = sale.toObject();
         const updatedProducts = saleObj.products.map((product: any) => {
-          if (!product || typeof product !== "object" || !product.price) return product;
+          if (!product || typeof product !== "object" || !product.price)
+            return product;
 
-          const calculatedSalePrice = Math.round(product.price * (1 - saleObj.discountPercent / 100));
+          const calculatedSalePrice = Math.round(
+            product.price * (1 - saleObj.discountPercent / 100)
+          );
 
           return {
             ...product,
