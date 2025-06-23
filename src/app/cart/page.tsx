@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { FaPlus } from "react-icons/fa";
@@ -8,6 +7,7 @@ import { FiMinus } from "react-icons/fi";
 import { MdClear } from "react-icons/md";
 import { useAppContext } from "@/context/AppProvider";
 import Link from "next/link";
+import InputApplyVoucher from "@/components/InputApplyVoucher";
 
 const CartPage = () => {
   const {
@@ -16,6 +16,7 @@ const CartPage = () => {
     cartTotal,
     updateCartItemQuantity,
     removeFromCart,
+    appliedVoucher,
   } = useAppContext();
 
   useEffect(() => {
@@ -41,7 +42,9 @@ const CartPage = () => {
     );
   }
 
-  console.log("Cart Items:", cartItems);
+  const finalTotal = appliedVoucher
+    ? Math.max(0, (cartTotal * (100 - appliedVoucher.value)) / 100)
+    : cartTotal;
 
   return (
     <div className=" max-w-[1170px] mx-auto flex flex-col gap-6 px-4 py-8">
@@ -160,13 +163,7 @@ const CartPage = () => {
       </div>
 
       <div className="flex justify-between">
-        <div className="flex gap-4">
-          <Input placeholder="Nhập mã voucher..." type="text" />
-          <Button className="bg-blue-500 text-white hover:bg-blue-700 py-4 px-12 rounded-sm cursor-pointer">
-            Áp dụng
-          </Button>
-        </div>
-
+        <InputApplyVoucher />
         <div className="w-[500px] border border-gray-200 rounded-lg px-6 py-8 bg-white shadow-sm">
           <h3 className="text-lg font-semibold text-gray-800">
             Tổng giá giỏ hàng
@@ -175,6 +172,15 @@ const CartPage = () => {
             <p>Tổng cộng:</p>
             <span>{cartTotal.toLocaleString("vi-VN")}</span>
           </div>
+
+          {appliedVoucher && (
+            <div className="flex justify-between items-center pb-3.5">
+              <p>Giảm giá voucher:</p>
+              <span className="text-red-500">
+                -{appliedVoucher.value.toLocaleString("vi-VN")}%
+              </span>
+            </div>
+          )}
           <div className="flex justify-between items-center border-t border-gray-200 pt-3.5 pb-3.5">
             <p>Phí vận chuyển</p>
             <select className="border border-gray-300 rounded-md p-2">
@@ -185,7 +191,7 @@ const CartPage = () => {
           </div>
           <div className="flex justify-between items-center border-t border-gray-200 pt-3.5">
             <p>Tổng:</p>
-            <span>{cartTotal.toLocaleString("vi-VN")}</span>
+            <span>{finalTotal.toLocaleString("vi-VN")}</span>
           </div>
 
           <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm mt-4 py-5 cursor-pointer">

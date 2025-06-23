@@ -42,9 +42,16 @@ interface AppContextType {
   ) => Promise<void>;
   clearCart: () => Promise<void>;
   fetchCart: () => Promise<void>;
-
   quantity?: number; // Số lượng sản phẩm trong giỏ hàng
   setQuantity?: (quantity: number) => void; // Hàm để cập nhật số lượng sản phẩm
+
+  // apply voucher state
+  appliedVoucher: {
+    code: string;
+    value: number;
+  } | null;
+  applyVoucher: (code: string) => Promise<void>;
+  removeVoucher: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -60,8 +67,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [cartItemCount, setCartItemCount] = useState(0);
 
   // so luong san pham
-
   const [quantity, setQuantity] = useState(1);
+
+  // Voucher state
+  const [appliedVoucher, setAppliedVoucher] = useState(null);
+
+  const applyVoucher = async (code: string) => {
+    try {
+      const response = await fetch("/api/vouchers/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+
+      if (response.ok) {
+        const { voucher } = await response.json();
+        setAppliedVoucher(voucher);
+      } else {
+        const error = await response.json();
+        throw new Error(error.error);
+      }
+    } catch (error) {
+      console.error("Failed to apply voucher:", error);
+      throw error;
+    }
+  };
+
+  const removeVoucher = () => {
+    setAppliedVoucher(null);
+  };
 
   // Fetch giỏ hàng
 
@@ -309,10 +343,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateCartItemQuantity,
         clearCart,
         fetchCart,
-
         // So luong san pham
         quantity,
         setQuantity,
+        // voucher functionality
+        appliedVoucher,
+        applyVoucher,
+        removeVoucher,
       }}
     >
       {children}
