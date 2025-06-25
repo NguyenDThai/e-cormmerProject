@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -7,7 +8,6 @@ import { FiMinus } from "react-icons/fi";
 import { MdClear } from "react-icons/md";
 import { useAppContext } from "@/context/AppProvider";
 import Link from "next/link";
-import InputApplyVoucher from "@/components/InputApplyVoucher";
 
 const CartPage = () => {
   const {
@@ -16,7 +16,6 @@ const CartPage = () => {
     cartTotal,
     updateCartItemQuantity,
     removeFromCart,
-    appliedVoucher,
   } = useAppContext();
 
   useEffect(() => {
@@ -41,10 +40,6 @@ const CartPage = () => {
       </div>
     );
   }
-
-  const finalTotal = appliedVoucher
-    ? Math.max(0, (cartTotal * (100 - appliedVoucher.value)) / 100)
-    : cartTotal;
 
   return (
     <div className=" max-w-[1170px] mx-auto flex flex-col gap-6 px-4 py-8">
@@ -79,14 +74,26 @@ const CartPage = () => {
             <li className="w-2/5">
               <div className="flex items-center relative">
                 <Image
-                  src={item.product.images[0] || "/placeholder-product.jpg"}
-                  alt={item.product.name}
+                  src={
+                    "images" in item.product &&
+                    Array.isArray((item.product as any).images)
+                      ? (item.product as { images: string[] }).images[0] ||
+                        "/placeholder-product.jpg"
+                      : "/placeholder-product.jpg"
+                  }
+                  alt={
+                    "name" in item.product
+                      ? (item.product as { name: string }).name
+                      : "Product image"
+                  }
                   width={80}
                   height={80}
                   className="w-16 h-16 object-contain rounded-md border border-gray-200"
                 />
                 <p className="text-lg font-medium ml-4 text-gray-800">
-                  {item.product.name}
+                  {"name" in item.product
+                    ? (item.product as { name: string }).name
+                    : ""}
                 </p>
                 <button
                   onClick={() => removeFromCart(item.product._id.toString())}
@@ -162,8 +169,8 @@ const CartPage = () => {
         </Button>
       </div>
 
-      <div className="flex justify-between">
-        <InputApplyVoucher />
+      <div className="flex justify-end">
+        {/* <InputApplyVoucher /> */}
         <div className="w-[500px] border border-gray-200 rounded-lg px-6 py-8 bg-white shadow-sm">
           <h3 className="text-lg font-semibold text-gray-800">
             Tổng giá giỏ hàng
@@ -173,14 +180,6 @@ const CartPage = () => {
             <span>{cartTotal.toLocaleString("vi-VN")}</span>
           </div>
 
-          {appliedVoucher && (
-            <div className="flex justify-between items-center pb-3.5">
-              <p>Giảm giá voucher:</p>
-              <span className="text-red-500">
-                -{appliedVoucher.value.toLocaleString("vi-VN")}%
-              </span>
-            </div>
-          )}
           <div className="flex justify-between items-center border-t border-gray-200 pt-3.5 pb-3.5">
             <p>Phí vận chuyển</p>
             <select className="border border-gray-300 rounded-md p-2">
@@ -191,12 +190,14 @@ const CartPage = () => {
           </div>
           <div className="flex justify-between items-center border-t border-gray-200 pt-3.5">
             <p>Tổng:</p>
-            <span>{finalTotal.toLocaleString("vi-VN")}</span>
+            <span>{cartTotal.toLocaleString("vi-VN")}</span>
           </div>
 
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm mt-4 py-5 cursor-pointer">
-            Thanh toán
-          </Button>
+          <Link href={"/checkout"}>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm mt-4 py-5 cursor-pointer">
+              Thanh toán
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

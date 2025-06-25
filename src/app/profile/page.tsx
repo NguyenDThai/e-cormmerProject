@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-type User = {
+export type User = {
   _id: string;
   name: string;
   email: string;
