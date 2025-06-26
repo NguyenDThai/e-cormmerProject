@@ -558,7 +558,16 @@ const CheckOutPage: React.FC = () => {
               <div className="flex items-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
                   <Image
-                    src={item.product.images[0] || "/placeholder-product.jpg"}
+                    src={
+                      typeof item.product === "object" &&
+                      "images" in item.product &&
+                      Array.isArray(
+                        (item.product as { images: string[] }).images
+                      )
+                        ? (item.product as { images: string[] }).images[0] ||
+                          "/placeholder-product.jpg"
+                        : "/placeholder-product.jpg"
+                    }
                     alt="image-product"
                     width={64}
                     height={64}
@@ -566,7 +575,9 @@ const CheckOutPage: React.FC = () => {
                   />
                 </div>
                 <span className="ml-4 font-medium text-gray-700">
-                  {item.product.name}
+                  {typeof item.product === "object" && "name" in item.product
+                    ? (item.product as { name: string }).name
+                    : ""}
                 </span>
               </div>
               <p className="font-medium text-gray-900">

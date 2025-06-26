@@ -90,7 +90,7 @@ const CategoryProductContent = () => {
                 </div>
 
                 {/* Add to Cart Button */}
-                <ButtonAddToCard />
+                <ButtonAddToCard productId={product._id.toString()} />
               </div>
             </div>
           </Link>

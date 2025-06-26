@@ -2,8 +2,9 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { Suspense } from "react";
 
-export default function PaymentSuccess() {
+function PaymentSuccess() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -62,5 +63,13 @@ export default function PaymentSuccess() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentSuccess />
+    </Suspense>
   );
 }

@@ -22,7 +22,7 @@ const ProductPage = async () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/product`,
       {
-        cache: "no-store", // Đảm bảo dữ liệu tươi mới
+        next: { revalidate: 60 }, // ISR mỗi 60s thay vì no-store
       }
     );
 
