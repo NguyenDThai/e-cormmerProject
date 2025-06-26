@@ -53,7 +53,7 @@ export default function PaymentSuccess() {
 
           <div className="mt-10">
             <Link
-              href="/"
+              href="http://localhost:3000"
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
               Quay lại trang chủ
