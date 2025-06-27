@@ -181,12 +181,8 @@ const CartPage = () => {
           </div>
 
           <div className="flex justify-between items-center border-t border-gray-200 pt-3.5 pb-3.5">
-            <p>Phí vận chuyển</p>
-            <select className="border border-gray-300 rounded-md p-2">
-              <option value="GHN">Giao hàng nhanh</option>
-              <option value="GHTK">Giao hàng tiết kiệm</option>
-              <option value="FREE">Miễn phí giao hàng</option>
-            </select>
+            <p>Số lượng:</p>
+            <span>{cartItems.length}</span>
           </div>
           <div className="flex justify-between items-center border-t border-gray-200 pt-3.5">
             <p>Tổng:</p>

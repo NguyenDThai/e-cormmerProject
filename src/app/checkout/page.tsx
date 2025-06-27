@@ -360,6 +360,9 @@ const CheckOutPage: React.FC = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<
+    "stripe" | "zalopay" | "cod"
+  >("stripe");
   const { cartItems, cartTotal, appliedVoucher } = useAppContext();
 
   useEffect(() => {
@@ -453,6 +456,7 @@ const CheckOutPage: React.FC = () => {
         email: user?.email,
         name: formData.name,
         voucherCode: appliedVoucher?.code || null, // Thêm mã voucher vào payload
+        paymentMethod,
       };
       console.log("Payment payload:", payload);
 
@@ -465,7 +469,7 @@ const CheckOutPage: React.FC = () => {
       const data = await response.json();
       console.log("API response:", data);
 
-      if (response.ok && data.sessionId) {
+      if (response.ok && data.sessionId && paymentMethod === "stripe") {
         const stripe = await stripePromise;
         if (stripe) {
           const { error } = await stripe.redirectToCheckout({
@@ -475,6 +479,12 @@ const CheckOutPage: React.FC = () => {
             throw new Error(error.message);
           }
         }
+      } else if (response.ok && paymentMethod === "cod") {
+        toast.success(
+          "Đơn hàng COD đã được tạo! Vui lòng chờ giao hàng để thanh toán."
+        );
+        // Có thể chuyển hướng đến trang xác nhận COD
+        window.location.href = "/order-confirmation?orderId=" + data.orderId;
       } else {
         throw new Error(data.error || "Lỗi khi tạo phiên thanh toán");
       }
@@ -594,9 +604,32 @@ const CheckOutPage: React.FC = () => {
             <p>Tổng phụ</p>
             <p>{cartTotal.toLocaleString("vi-VN")} đ</p>
           </div>
-          <div className="flex justify-between text-gray-600">
-            <p>Phí vận chuyển</p>
-            <p>Miễn phí</p>
+          <div className="mt-6">
+            <label className="block text-gray-700 font-medium mb-2">
+              Phương thức thanh toán:
+            </label>
+            <div className="space-y-2">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="stripe"
+                  checked={paymentMethod === "stripe"}
+                  onChange={() => setPaymentMethod("stripe")}
+                  className="mr-2"
+                />
+                Thanh toán bằng Stripe (thẻ tín dụng/thẻ ghi nợ)
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="cod"
+                  checked={paymentMethod === "cod"}
+                  onChange={() => setPaymentMethod("cod")}
+                  className="mr-2"
+                />
+                Thanh toán khi nhận hàng (COD)
+              </label>
+            </div>
           </div>
           <div className="flex justify-between pt-4 mt-4 border-t border-gray-200">
             <p className="font-bold text-lg text-gray-800">Tổng cộng</p>
@@ -616,7 +649,11 @@ const CheckOutPage: React.FC = () => {
           disabled={isLoading}
           className="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-medium transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Đang xử lý..." : "Thanh toán với Stripe"}
+          {isLoading
+            ? "Đang xử lý..."
+            : paymentMethod === "stripe"
+            ? "Thanh toán với Stripe"
+            : "Đặt hàng COD"}
         </button>
       </div>
 
