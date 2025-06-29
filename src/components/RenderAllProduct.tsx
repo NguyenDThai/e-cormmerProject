@@ -108,7 +108,7 @@ const RenderAllProduct = () => {
                         </p>
                       </div>
                     ) : (
-                      <p className="text-red-500 font-bold text-lg">
+                      <p className="text-black font-bold text-lg">
                         {product?.price?.toLocaleString("vi-VN")} đ
                       </p>
                     )}
