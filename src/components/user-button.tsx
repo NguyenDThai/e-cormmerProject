@@ -70,7 +70,7 @@ const UserButton = () => {
                       Sản phẩm yêu thích
                     </DropdownMenuItem>
                   </Link>
-                  <Link href="/profile">
+                  <Link href="/order">
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
                       Đơn hàng
                     </DropdownMenuItem>
