@@ -247,18 +247,6 @@ const FlashSaleManagement = () => {
                         {formatDate(flashSale.endTime)}
                       </p>
                     </div>
-                    <div>
-                      <span className="text-gray-500">Đã bán:</span>
-                      <p className="font-medium text-orange-600">
-                        {flashSale.totalSold} sản phẩm
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Giới hạn/khách:</span>
-                      <p className="font-medium">
-                        {flashSale.maxQuantityPerUser} sản phẩm
-                      </p>
-                    </div>
                   </div>
                 </div>
 
