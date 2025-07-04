@@ -63,6 +63,82 @@ const OrdersPage = () => {
     fetchOrders();
   }, [session, selectedStatus]);
 
+  const generateInvoice = (order: Order) => {
+    const invoiceWindow = window.open("", "", "width=800,height=600");
+    if (!invoiceWindow) return;
+
+    invoiceWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="vi">
+      <head>
+        <meta charset="UTF-8">
+        <title>Hóa đơn - Đơn hàng #${order.orderId}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20mm; }
+          .invoice-header { text-align: center; margin-bottom: 20mm; }
+          .invoice-details { margin-bottom: 10mm; }
+          .items-table { width: 100%; border-collapse: collapse; margin-bottom: 10mm; }
+          .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          .items-table th { background-color: #f2f2f2; }
+          .total { font-weight: bold; text-align: right; }
+          @media print {
+            body { padding: 0; }
+            .invoice-header { margin-bottom: 10mm; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="invoice-header">
+          <h1>HÓA ĐƠN THANH TOÁN</h1>
+          <h2>Đơn hàng #${order.orderId}</h2>
+          <p>Ngày: ${new Date(order.createdAt).toLocaleDateString("vi-VN")}</p>
+        </div>
+        <div class="invoice-details">
+          <p><strong>Mã số khách hàng:</strong> ${order.userId}</p>
+          <p><strong>Phương thức thanh toán:</strong> ${order.paymentMethod}</p>
+          <p><strong>Trạng thái:</strong> ${
+            order.status === "SUCCESS"
+              ? "Hoàn tất"
+              : order.status === "AWAITING_PAYMENT"
+              ? "Chờ thanh toán"
+              : order.status
+          }</p>
+        </div>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.items
+              .map(
+                (item) => `
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${order.amount.toLocaleString("vi-VN")} đ</td>
+                <td>${order.amount.toLocaleString("vi-VN")} đ</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+        <div className="total">
+          <p>Tổng cộng: ${order.amount.toLocaleString("vi-VN")} đ</p>
+        </div>
+        <script>
+          window.onload = function() { window.print(); window.close(); };
+        </script>
+      </body>
+      </html>
+    `);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between">
@@ -88,6 +164,7 @@ const OrdersPage = () => {
               <th className="py-3 px-4 border-b">Trạng thái</th>
               <th className="py-3 px-4 border-b">Phương thức</th>
               <th className="py-3 px-4 border-b">Ngày đặt</th>
+              <th className="py-3 px-4 border-b">In hóa đơn</th>
             </tr>
           </thead>
           <tbody>
@@ -118,6 +195,14 @@ const OrdersPage = () => {
                 <td className="py-3 px-4">{order.paymentMethod}</td>
                 <td className="py-3 px-4">
                   {new Date(order.createdAt).toLocaleDateString("vi-VN")}
+                </td>
+                <td className="py-3 px-4">
+                  <button
+                    onClick={() => generateInvoice(order)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                  >
+                    In hóa đơn
+                  </button>
                 </td>
               </tr>
             ))}
