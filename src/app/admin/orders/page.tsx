@@ -23,7 +23,7 @@ interface Order {
     | "FAILED"
     | "AWAITING_PAYMENT"
     | "CANCELLED";
-  paymentMethod: "Stripe" | "cod";
+  paymentMethod: "stripe" | "cod";
   items: OrderItem[];
   createdAt: string;
 }
@@ -192,7 +192,9 @@ const OrdersPage = () => {
                       : order.status}
                   </span>
                 </td>
-                <td className="py-3 px-4">{order.paymentMethod}</td>
+                <td className="py-3 px-4">
+                  {order.paymentMethod === "stripe" ? "Atm" : "Cod"}
+                </td>
                 <td className="py-3 px-4">
                   {new Date(order.createdAt).toLocaleDateString("vi-VN")}
                 </td>
