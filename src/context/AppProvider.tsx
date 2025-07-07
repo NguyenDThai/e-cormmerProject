@@ -17,7 +17,8 @@ interface FavoriteItem {
   productDescription: string;
   productPrice: number;
   productSalePrice: number;
-  userEmail: string;
+  userEmails: [];
+  favoriteCount: number;
 }
 
 interface AppContextType {
@@ -29,6 +30,7 @@ interface AppContextType {
   isFavorite: (productId: string) => boolean; // Kiểm tra sản phẩm có trong yêu thích không
   adminFavorites: FavoriteItem[];
   fetchAdminFavorites: () => Promise<void>;
+  totalFavorites: number;
 
   // Cart functionality
   cartItems: CartItem[];
@@ -61,6 +63,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<any[]>([]);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [adminFavorites, setAdminFavorites] = useState<FavoriteItem[]>([]);
+  const [totalFavorites, setTotalFavorites] = useState(0);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -240,26 +243,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session?.user?.email]);
 
-  const fetchAdminFavorites = useCallback(async () => {
-    if (!session?.user?.email) {
-      setAdminFavorites([]);
-      return;
-    }
-    try {
-      const response = await fetch("/api/favorites/admin", {
-        credentials: "include",
-      });
-      if (!response.ok) {
-        console.error("Không thể lấy danh sách yêu thích admin");
-        return;
+  const fetchAdminFavorites = useCallback(
+    async ({ page = 1, limit = 10 } = {}) => {
+      try {
+        const response = await fetch(
+          `/api/favorites/admin?page=${page}&limit=${limit}`,
+          {
+            credentials: "include",
+          }
+        );
+        if (!response.ok) {
+          console.error("Không thể lấy danh sách yêu thích cho quản trị viên");
+          return;
+        }
+        const data = await response.json();
+        setAdminFavorites(data.favorites || []);
+        setTotalFavorites(data.totalCount || 0);
+      } catch (error) {
+        console.error(
+          "Lỗi khi lấy danh sách yêu thích cho quản trị viên:",
+          error
+        );
       }
-
-      const data = await response.json();
-      setAdminFavorites(data.favorites || []);
-    } catch (error) {
-      console.error("Lỗi khi lấy danh sách yêu thích admin:", error);
-    }
-  }, [session?.user?.email]);
+    },
+    []
+  );
 
   // Thêm sản phẩm yêu thích
   const addFavorite = useCallback(
@@ -334,6 +342,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         favorites,
         adminFavorites,
         fetchAdminFavorites,
+        totalFavorites,
         // Cart functionality
         cartItems,
         cartTotal,

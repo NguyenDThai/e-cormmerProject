@@ -3,34 +3,73 @@ import User from "@/models/user";
 import connectToDatabase from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     await connectToDatabase();
-    const users = await User.find({ favorite: { $ne: [] } })
-      .populate({
-        path: "favorite",
-        select: "name description price salePrice",
-      })
-      .select("email favorite") // Chỉ lấy email và favorite
-      .lean();
 
-    // Tạo danh sách sản phẩm yêu thích với thông tin người dùng
-    const favorites = users
-      .flatMap((user) =>
-        user.favorite
-          ?.filter((product: any) => product && product._id && product.name) // Lọc sản phẩm hợp lệ
-          ?.map((product: any) => ({
-            productId: product._id.toString(),
-            productName: product.name,
-            productDescription: product.description,
-            productPrice: product.price,
-            productSalePrice: product.salePrice,
-            userEmail: user.email,
-          }))
-      )
-      .filter((item) => item); // Loại bỏ undefined/null
+    // Lấy tham số phân trang (nếu có)
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
 
-    return NextResponse.json({ favorites }, { status: 200 });
+    // Aggregation để nhóm sản phẩm yêu thích
+    const favorites = await User.aggregate([
+      // Lọc người dùng có favorite không rỗng
+      { $match: { favorite: { $ne: [] } } },
+      // Mở rộng mảng favorite
+      { $unwind: "$favorite" },
+      // Populate thông tin sản phẩm
+      {
+        $lookup: {
+          from: "products", // Tên collection của Product
+          localField: "favorite",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      { $unwind: "$product" },
+      // Nhóm theo sản phẩm
+      {
+        $group: {
+          _id: "$product._id",
+          productName: { $first: "$product.name" },
+          productDescription: { $first: "$product.description" },
+          productPrice: { $first: "$product.price" },
+          productSalePrice: { $first: "$product.salePrice" },
+          favoriteCount: { $sum: 1 },
+          userEmails: { $push: "$email" },
+        },
+      },
+      // Định dạng đầu ra
+      {
+        $project: {
+          productId: "$_id",
+          productName: 1,
+          productDescription: 1,
+          productPrice: 1,
+          productSalePrice: 1,
+          favoriteCount: 1,
+          userEmails: 1,
+          _id: 0,
+        },
+      },
+      // Phân trang
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+    ]);
+
+    // Đếm tổng số sản phẩm yêu thích (cho phân trang)
+    const totalCount =
+      (
+        await User.aggregate([
+          { $match: { favorite: { $ne: [] } } },
+          { $unwind: "$favorite" },
+          { $group: { _id: "$favorite" } },
+          { $count: "total" },
+        ])
+      )[0]?.total || 0;
+
+    return NextResponse.json({ favorites, totalCount }, { status: 200 });
   } catch (error) {
     console.error("Error fetching admin favorites:", error);
     return NextResponse.json(

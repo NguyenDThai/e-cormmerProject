@@ -50,7 +50,7 @@ export default function Home() {
         <aside
           className={`${
             isSidebarOpen ? "w-80" : "w-16"
-          } bg-gradient-to-b from-blue-900 to-blue-800 text-white min-h-screen p-6 transition-all duration-300 ease-in-out shadow-xl z-10 rounded-lg`}
+          } bg-gradient-to-b from-blue-900 to-blue-800 text-white min-h-screen shrink-0 p-6 transition-all duration-300 ease-in-out shadow-xl z-10 rounded-lg`}
         >
           <div className="flex items-center mb-8">
             <button
