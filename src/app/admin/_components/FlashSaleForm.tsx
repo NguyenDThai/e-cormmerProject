@@ -46,6 +46,7 @@ export const FlashSaleForm: React.FC<FlashSaleFormProps> = ({
     maxQuantityPerUser: 1,
     productIds: [],
   });
+  const isEditing = !!initialData;
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [errors, setErrors] = useState<
@@ -163,6 +164,8 @@ export const FlashSaleForm: React.FC<FlashSaleFormProps> = ({
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  readOnly={isEditing}
+                  className={isEditing ? "bg-gray-100 cursor-not-allowed" : ""}
                   placeholder="V.d: Siêu sale bùng nổ"
                 />
                 {errors.name && (
@@ -176,6 +179,8 @@ export const FlashSaleForm: React.FC<FlashSaleFormProps> = ({
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
+                  readOnly={isEditing}
+                  className={isEditing ? "bg-gray-100 cursor-not-allowed" : ""}
                   placeholder="Mô tả ngắn về chương trình flash sale..."
                 />
               </div>
@@ -193,6 +198,8 @@ export const FlashSaleForm: React.FC<FlashSaleFormProps> = ({
                   name="startTime"
                   type="datetime-local"
                   value={formData.startTime}
+                  readOnly={isEditing}
+                  className={isEditing ? "bg-gray-100 cursor-not-allowed" : ""}
                   onChange={handleChange}
                 />
                 {errors.startTime && (
@@ -230,6 +237,8 @@ export const FlashSaleForm: React.FC<FlashSaleFormProps> = ({
                   name="discountPercent"
                   type="number"
                   value={formData.discountPercent}
+                  readOnly={isEditing}
+                  className={isEditing ? "bg-gray-100 cursor-not-allowed" : ""}
                   onChange={handleChange}
                 />
                 {errors.discountPercent && (
@@ -247,6 +256,8 @@ export const FlashSaleForm: React.FC<FlashSaleFormProps> = ({
                   name="maxQuantityPerUser"
                   type="number"
                   value={formData.maxQuantityPerUser}
+                  readOnly={isEditing}
+                  className={isEditing ? "bg-gray-100 cursor-not-allowed" : ""}
                   onChange={handleChange}
                 />
                 {errors.maxQuantityPerUser && (
