@@ -79,7 +79,7 @@ const UserButton = () => {
               ) : (
                 // Chức năng cho admin
                 <>
-                  <Link href="/admin/allprofile">
+                  {/* <Link href="/admin/allprofile">
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
                       Tài khoản
                     </DropdownMenuItem>
@@ -113,7 +113,7 @@ const UserButton = () => {
                     <DropdownMenuItem className="h-10 px-4 py-2 text-sm hover:bg-gray-100 rounded transition-colors cursor-pointer">
                       Thống kê
                     </DropdownMenuItem>
-                  </Link>
+                  </Link> */}
                 </>
               )}
 
