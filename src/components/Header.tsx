@@ -20,8 +20,8 @@ const Header = () => {
   return (
     <div className="mb-6 font-sans">
       {/* Top Banner - Modern Gradient */}
-      <div className="bg-gradient-to-r from-blue-700 to-blue-500 h-10 md:h-12 flex items-center justify-center overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap">
+      <div className="bg-gradient-to-r from-blue-700 to-blue-500 h-10 md:h-12 flex items-center justify-center overflow-hidden ">
+        <div className="animate-marquee whitespace-nowrap ">
           <p className="text-white font-medium text-sm md:text-base tracking-wider inline-flex items-center">
             <span className="hidden md:inline-block mr-3">✨</span>
             SUMMER SALE: 50% OFF ALL SWIMWEAR + FREE EXPRESS DELIVERY
@@ -44,7 +44,7 @@ const Header = () => {
             </Link>
 
             {/* Desktop Navigation - Minimalist */}
-            <nav className="hidden md:flex items-center space-x-8 ml-12">
+            <nav className="hidden lg:flex items-center space-x-8 ml-12">
               {[
                 { name: "Trang chủ", href: "/" },
                 { name: "Cửa hàng", href: "#" },
@@ -67,7 +67,7 @@ const Header = () => {
             {/* Search and User Actions - Refined */}
             <div className="flex items-center space-x-3 md:space-x-5">
               {/* Search Bar - Expanded */}
-              <div className="relative hidden md:block w-64">
+              <div className="relative hidden sm:block w-64">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <CiSearch className="h-5 w-5 text-gray-400" />
                 </div>
@@ -75,7 +75,7 @@ const Header = () => {
               </div>
 
               {/* Mobile Search Button */}
-              <button className="md:hidden p-2 rounded-full text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors">
+              <button className="sm:hidden p-2 rounded-full text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-colors">
                 <CiSearch className="h-5 w-5" />
               </button>
 

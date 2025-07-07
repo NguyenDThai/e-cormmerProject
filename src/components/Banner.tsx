@@ -22,7 +22,7 @@ const Banner = () => {
     return () => clearInterval(interval);
   }, [banners.length]);
   return (
-    <div className="relative w-full h-[400px] overflow-hidden">
+    <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] overflow-hidden">
       {/* Các banner */}
       {banners.map((banner, index) => (
         <div
@@ -35,7 +35,8 @@ const Banner = () => {
             src={banner}
             alt={`banner ${index + 1}`}
             layout="fill"
-            priority={index === 0} // Chỉ ưu tiên load ảnh đầu tiên
+            objectFit="cover" // Đảm bảo ảnh cover toàn bộ khu vực
+            priority={index === 0}
           />
         </div>
       ))}
@@ -46,7 +47,7 @@ const Banner = () => {
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full ${
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
               index === currentSlide ? "bg-white" : "bg-white/50"
             }`}
             aria-label={`Go to slide ${index + 1}`}

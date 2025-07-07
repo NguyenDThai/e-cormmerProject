@@ -83,7 +83,7 @@ const AllProfile = () => {
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-screen container mx-auto">
       <div className="flex justify-center">
         <h1 className="text-center text-2xl font-semibold">
           Danh sách người dùng

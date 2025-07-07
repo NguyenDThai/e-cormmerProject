@@ -51,12 +51,12 @@ const CategoriesList = () => {
     router.push(`/product?category=${category}`);
   };
   return (
-    <div className="flex justify-between mt-14">
+    <div className="flex flex-wrap justify-between gap-4 mt-14 px-4">
       {categories.map((cat) => (
         <div
           key={cat.name}
           onClick={() => handleCategoryClick(cat.name)}
-          className="w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all"
+          className="w-full sm:w-[calc(50%-1rem)] md:w-[calc(33.333%-1rem)] lg:w-[170px] h-[145px] border border-slate-300 flex flex-col justify-center items-center rounded-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-all"
         >
           {cat.icon}
           <span className="text-lg">{cat.label}</span>

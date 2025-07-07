@@ -509,64 +509,74 @@ const CheckOutPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8">
       {/* Customer Information Section */}
-      <div className="flex-1 bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+      <div className="flex-1 bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
             Chi tiết thanh toán
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition text-sm sm:text-base"
           >
             Cập nhật thông tin
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div className="flex flex-col">
-            <label className="text-gray-700 font-medium mb-1">Họ và tên:</label>
-            <p className="px-4 py-2 bg-gray-50 rounded-md">{user.name}</p>
+            <label className="text-sm sm:text-base text-gray-700 font-medium mb-1">
+              Họ và tên:
+            </label>
+            <p className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-50 rounded-md text-sm sm:text-base">
+              {user.name}
+            </p>
           </div>
 
           <div className="flex flex-col">
-            <label className="text-gray-700 font-medium mb-1">Địa chỉ:</label>
-            <p className="px-4 py-2 bg-gray-50 rounded-md">
+            <label className="text-sm sm:text-base text-gray-700 font-medium mb-1">
+              Địa chỉ:
+            </label>
+            <p className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-50 rounded-md text-sm sm:text-base">
               {user.address || "Chưa cập nhật"}
             </p>
           </div>
 
           <div className="flex flex-col">
-            <label className="text-gray-700 font-medium mb-1">
+            <label className="text-sm sm:text-base text-gray-700 font-medium mb-1">
               Số điện thoại:
             </label>
-            <p className="px-4 py-2 bg-gray-50 rounded-md">
+            <p className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-50 rounded-md text-sm sm:text-base">
               {user.phone || "Chưa cập nhật"}
             </p>
           </div>
 
           <div className="flex flex-col">
-            <label className="text-gray-700 font-medium mb-1">Email:</label>
-            <p className="px-4 py-2 bg-gray-50 rounded-md">{user.email}</p>
+            <label className="text-sm sm:text-base text-gray-700 font-medium mb-1">
+              Email:
+            </label>
+            <p className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-50 rounded-md text-sm sm:text-base">
+              {user.email}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Order Summary Section */}
-      <div className="lg:w-1/2 bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">
+      <div className="w-full lg:w-1/2 bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-100">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">
           Tóm tắt đơn hàng
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4 max-h-[300px] overflow-y-auto">
           {cartItems.map((item) => (
             <div
               key={item.product._id.toString()}
-              className="flex items-center justify-between py-3 border-b border-gray-100"
+              className="flex items-center justify-between py-2 sm:py-3 border-b border-gray-100"
             >
-              <div className="flex items-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
+              <div className="flex items-center flex-1 min-w-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
                   <Image
                     src={
                       typeof item.product === "object" &&
@@ -584,32 +594,36 @@ const CheckOutPage: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="ml-4 font-medium text-gray-700">
+                <span className="ml-2 sm:ml-3 md:ml-4 font-medium text-gray-700 text-sm sm:text-base truncate">
                   {typeof item.product === "object" && "name" in item.product
                     ? (item.product as { name: string }).name
                     : ""}
                 </span>
               </div>
-              <p className="font-medium text-gray-900">
-                {item.price.toLocaleString("vi-VN")} đ
-              </p>
-              <p className="ml-3">x{item.quantity}</p>
+              <div className="flex items-center ml-2">
+                <p className="font-medium text-gray-900 text-sm sm:text-base whitespace-nowrap">
+                  {item.price.toLocaleString("vi-VN")} đ
+                </p>
+                <p className="ml-1 sm:ml-2 text-sm sm:text-base whitespace-nowrap">
+                  x{item.quantity}
+                </p>
+              </div>
             </div>
           ))}
         </div>
 
         {/* Order Totals */}
-        <div className="mt-6 space-y-3">
-          <div className="flex justify-between text-gray-600">
+        <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
+          <div className="flex justify-between text-gray-600 text-sm sm:text-base">
             <p>Tổng phụ</p>
             <p>{cartTotal.toLocaleString("vi-VN")} đ</p>
           </div>
-          <div className="mt-6">
-            <label className="block text-gray-700 font-medium mb-2">
+          <div className="mt-4 sm:mt-6">
+            <label className="block text-sm sm:text-base text-gray-700 font-medium mb-1 sm:mb-2">
               Phương thức thanh toán:
             </label>
-            <div className="space-y-2">
-              <label className="flex items-center">
+            <div className="space-y-1 sm:space-y-2">
+              <label className="flex items-center text-sm sm:text-base">
                 <input
                   type="radio"
                   value="stripe"
@@ -617,9 +631,9 @@ const CheckOutPage: React.FC = () => {
                   onChange={() => setPaymentMethod("stripe")}
                   className="mr-2"
                 />
-                Thanh toán bằng Stripe (thẻ tín dụng/thẻ ghi nợ)
+                Thanh toán bằng Stripe
               </label>
-              <label className="flex items-center">
+              <label className="flex items-center text-sm sm:text-base">
                 <input
                   type="radio"
                   value="cod"
@@ -631,15 +645,17 @@ const CheckOutPage: React.FC = () => {
               </label>
             </div>
           </div>
-          <div className="flex justify-between pt-4 mt-4 border-t border-gray-200">
-            <p className="font-bold text-lg text-gray-800">Tổng cộng</p>
-            <p className="font-bold text-lg text-gray-800">
+          <div className="flex justify-between pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-gray-200">
+            <p className="font-bold text-base sm:text-lg text-gray-800">
+              Tổng cộng
+            </p>
+            <p className="font-bold text-base sm:text-lg text-gray-800">
               {finalTotal.toLocaleString("vi-VN")} đ
             </p>
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           <InputApplyVoucher />
         </div>
 
@@ -647,7 +663,7 @@ const CheckOutPage: React.FC = () => {
         <button
           onClick={handlePayment}
           disabled={isLoading}
-          className="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-medium transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full mt-4 sm:mt-6 md:mt-8 bg-blue-600 hover:bg-blue-700 text-white py-2 sm:py-3 px-3 sm:px-4 rounded-md font-medium transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           {isLoading
             ? "Đang xử lý..."
@@ -659,10 +675,10 @@ const CheckOutPage: React.FC = () => {
 
       {/* Update Info Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+          <div className="bg-white rounded-lg p-4 sm:p-5 md:p-6 w-full max-w-sm sm:max-w-md">
+            <div className="flex justify-between items-center mb-3 sm:mb-4">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
                 Cập nhật thông tin
               </h2>
               <button
@@ -671,7 +687,7 @@ const CheckOutPage: React.FC = () => {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
+                  className="h-5 w-5 sm:h-6 sm:w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -687,11 +703,11 @@ const CheckOutPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex flex-col">
                   <label
                     htmlFor="modal-name"
-                    className="text-gray-700 font-medium mb-1"
+                    className="text-sm sm:text-base text-gray-700 font-medium mb-1"
                   >
                     Họ và tên:
                   </label>
@@ -701,7 +717,7 @@ const CheckOutPage: React.FC = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="px-4 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm sm:text-base"
                     required
                   />
                 </div>
@@ -709,7 +725,7 @@ const CheckOutPage: React.FC = () => {
                 <div className="flex flex-col">
                   <label
                     htmlFor="modal-address"
-                    className="text-gray-700 font-medium mb-1"
+                    className="text-sm sm:text-base text-gray-700 font-medium mb-1"
                   >
                     Địa chỉ:
                   </label>
@@ -719,14 +735,14 @@ const CheckOutPage: React.FC = () => {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="px-4 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm sm:text-base"
                   />
                 </div>
 
                 <div className="flex flex-col">
                   <label
                     htmlFor="modal-phone"
-                    className="text-gray-700 font-medium mb-1"
+                    className="text-sm sm:text-base text-gray-700 font-medium mb-1"
                   >
                     Số điện thoại:
                   </label>
@@ -736,14 +752,14 @@ const CheckOutPage: React.FC = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="px-4 py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-white rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm sm:text-base"
                   />
                 </div>
 
                 <div className="flex flex-col">
                   <label
                     htmlFor="modal-email"
-                    className="text-gray-700 font-medium mb-1"
+                    className="text-sm sm:text-base text-gray-700 font-medium mb-1"
                   >
                     Email:
                   </label>
@@ -753,23 +769,23 @@ const CheckOutPage: React.FC = () => {
                     name="email"
                     value={user?.email || ""}
                     readOnly
-                    className="px-4 py-2 bg-gray-100 rounded-md border cursor-not-allowed"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-100 rounded-md border cursor-not-allowed text-sm sm:text-base"
                   />
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end space-x-3">
+              <div className="mt-4 sm:mt-6 flex justify-end space-x-2 sm:space-x-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-600 rounded-md hover:bg-gray-50 transition"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 border border-gray-600 rounded-md hover:bg-gray-50 transition text-sm sm:text-base"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:bg-blue-400 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:bg-blue-400 disabled:cursor-not-allowed text-sm sm:text-base"
                 >
                   {isLoading ? "Đang xử lý..." : "Cập nhật"}
                 </button>

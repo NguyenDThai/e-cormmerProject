@@ -48,31 +48,37 @@ const ProductDetail = async ({
   console.log("Product Detail:", productDetail);
 
   return (
-    <div className="container mx-auto py-8 px-4 h-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Phần hình ảnh */}
+    <div className="container mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 h-full">
+      {/* Main Product Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        {/* Image Section */}
         <ImageProductDetail productDetail={productDetail} />
 
-        {/* Phần thông tin */}
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold">{productDetail.name}</h1>
-          <p className="text-gray-600">{productDetail.description}</p>
+        {/* Info Section */}
+        <div className="space-y-4 sm:space-y-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            {productDetail.name}
+          </h1>
+          <p className="text-gray-600 text-sm sm:text-base">
+            {productDetail.description}
+          </p>
 
+          {/* Price and Quantity */}
           <div>
-            <div className="flex items-center gap-4 justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-4">
                   {productDetail.salePrice ? (
                     <>
-                      <span className="text-2xl font-bold text-red-600">
+                      <span className="text-xl sm:text-2xl font-bold text-red-600">
                         {productDetail.salePrice?.toLocaleString("vi-VN")}đ
                       </span>
-                      <span className="text-lg text-gray-500 line-through">
+                      <span className="text-base sm:text-lg text-gray-500 line-through">
                         {productDetail.price?.toLocaleString("vi-VN")}đ
                       </span>
                     </>
                   ) : (
-                    <span className="text-2xl font-bold text-red-600">
+                    <span className="text-xl sm:text-2xl font-bold text-red-600">
                       {productDetail.price?.toLocaleString("vi-VN")}đ
                     </span>
                   )}
@@ -81,43 +87,51 @@ const ProductDetail = async ({
                 <QuantityProduct productDetail={productDetail} />
               </div>
               {productDetail.quantity && (
-                <span>Chỉ còn có {productDetail.quantity} sản phẩm</span>
+                <span className="text-sm sm:text-base text-gray-600">
+                  Chỉ còn có {productDetail.quantity} sản phẩm
+                </span>
               )}
             </div>
-            {/* Nút xem cấu hình (sẽ được xử lý bằng client component) */}
-            <div className="mt-2.5">
+
+            {/* Configuration */}
+            <div className="mt-2 sm:mt-2.5">
               {productDetail.configuration ? (
                 <ConfigurationModal
                   configuration={productDetail.configuration}
                   category={productDetail.category}
                 />
               ) : (
-                <p>Sản phẩm không có cấu hình</p>
+                <p className="text-sm sm:text-base text-gray-500">
+                  Sản phẩm không có cấu hình
+                </p>
               )}
             </div>
           </div>
 
-          {/* Action btn */}
-          <div className="flex gap-2.5">
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
             <ButtonAddToCard productId={productDetail._id} />
-            <button className="mt-4 w-full bg-blue-600 cursor-pointer text-white py-2 rounded-lg hover:bg-blue-500 transition-colors duration-300 flex items-center justify-center space-x-2">
+            <button className="w-full bg-blue-600 cursor-pointer text-white py-2 mt-4 rounded-lg hover:bg-blue-500 transition-colors duration-300 flex items-center justify-center space-x-2">
               Mua ngay
             </button>
           </div>
         </div>
       </div>
 
-      {/* San pham Lien quan */}
-      <div className="mt-10">
-        <h1 className="text-2xl font-semibold">Sản phẩm liên quan</h1>
-        <div className="container mx-auto px-4 py-8 ">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* Related Products */}
+      <div className="mt-8 sm:mt-10">
+        <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">
+          Sản phẩm liên quan
+        </h1>
+        <div className="px-0 sm:px-4 py-4 sm:py-6 md:py-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {categoryProduct.map((product) => (
               <Link href={`/product/${product.name}`} key={product._id}>
-                <div className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
+                <div className="group relative bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-md overflow-hidden hover:shadow-md sm:hover:shadow-lg transition-all duration-300">
                   {/* <FavoriteButton productId={product._id.toString()} /> */}
+
                   {/* Product Image */}
-                  <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center p-4">
+                  <div className="relative w-full h-40 sm:h-40 md:h-48 bg-gray-100 flex items-center justify-center p-3 sm:p-4">
                     <Image
                       src={product?.images[0]}
                       alt={product?.name}
@@ -128,24 +142,24 @@ const ProductDetail = async ({
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-4">
-                    <h3 className="text-gray-800 font-medium text-lg mb-1 truncate">
+                  <div className="p-3 sm:p-4">
+                    <h3 className="text-gray-800 font-medium text-sm sm:text-base md:text-lg mb-1 truncate">
                       {product?.name}
                     </h3>
 
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center space-x-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 sm:mt-3 gap-1 sm:gap-0">
+                      <div className="flex items-center gap-1 sm:gap-1.5">
                         {product?.salePrice ? (
-                          <div className="flex items-center gap-1.5">
-                            <p className="text-red-500 font-bold text-lg">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-0 sm:gap-1.5">
+                            <p className="text-red-500 font-bold text-base sm:text-lg">
                               {product?.salePrice?.toLocaleString("vi-VN")} đ
                             </p>
-                            <p className="text-gray-400 text-sm line-through ">
+                            <p className="text-gray-400 text-xs sm:text-sm line-through">
                               {product?.price?.toLocaleString("vi-VN")} đ
                             </p>
                           </div>
                         ) : (
-                          <p className="text-red-500 font-bold text-lg">
+                          <p className="text-red-500 font-bold text-base sm:text-lg">
                             {product?.price?.toLocaleString("vi-VN")} đ
                           </p>
                         )}
@@ -153,15 +167,17 @@ const ProductDetail = async ({
 
                       {/* Rating (optional) */}
                       <div className="flex items-center">
-                        <StarIcon className="w-4 h-4 text-yellow-400" />
-                        <span className="text-gray-600 text-sm ml-1">
+                        <StarIcon className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />
+                        <span className="text-gray-600 text-xs sm:text-sm ml-1">
                           {"4.5"}
                         </span>
                       </div>
                     </div>
 
                     {/* Add to Cart Button */}
-                    <ButtonAddToCard productId={product._id.toString()} />
+                    <div className="mt-2 sm:mt-3">
+                      <ButtonAddToCard productId={product._id.toString()} />
+                    </div>
                   </div>
                 </div>
               </Link>

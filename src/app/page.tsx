@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Banner from "@/components/Banner";
 import ProductFeatured from "@/components/ProductFeatured";
@@ -9,7 +9,13 @@ import FlashSaleSectionHeader from "@/components/FlashSaleSectionHeader";
 import { useFlashSale } from "@/hooks/useFlashSale";
 
 export default function Home() {
-  const { activeFlashSale, hasActiveFlashSale, isLoading, error, refreshFlashSale } = useFlashSale();
+  const {
+    activeFlashSale,
+    hasActiveFlashSale,
+    isLoading,
+    error,
+    refreshFlashSale,
+  } = useFlashSale();
 
   // Handler when flash sale expires
   const handleFlashSaleExpire = () => {
@@ -28,7 +34,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-12">
           {/* Flash Sale Banner */}
           {hasActiveFlashSale && activeFlashSale && (
-            <FlashSaleBanner 
+            <FlashSaleBanner
               flashSale={activeFlashSale}
               onExpire={handleFlashSaleExpire}
             />
@@ -37,13 +43,13 @@ export default function Home() {
           {/* Featured Section - Flash Sale Products */}
           {(isLoading || hasActiveFlashSale) && (
             <section className="mb-16">
-              <FlashSaleSectionHeader 
+              <FlashSaleSectionHeader
                 flashSale={activeFlashSale}
                 isLoading={isLoading}
                 error={error}
                 onRetry={refreshFlashSale}
               />
-              
+
               {/* Products in Flash Sale */}
               {hasActiveFlashSale && <ProductFeatured />}
             </section>
@@ -59,10 +65,22 @@ export default function Home() {
                 </div>
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center mt-4">
                   <div className="text-gray-500 mb-2">
-                    <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400 mb-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    <h3 className="text-lg font-medium">Hiện tại chưa có Flash Sale</h3>
+                    <h3 className="text-lg font-medium">
+                      Hiện tại chưa có Flash Sale
+                    </h3>
                     <p className="text-sm text-gray-400 mt-1">
                       Hãy theo dõi để không bỏ lỡ các deal hấp dẫn sắp tới!
                     </p>
@@ -81,6 +99,7 @@ export default function Home() {
             <h2 className="text-4xl font-semibold mt-5">
               Theo thể loại sản phẩm
             </h2>
+
             <CategoriesList />
           </section>
 
