@@ -21,6 +21,17 @@ interface FavoriteItem {
   favoriteCount: number;
 }
 
+// Định nghĩa interface cho Order
+interface Order {
+  _id: string;
+  orderId: string;
+  userId: string;
+  amount: number;
+  status: "SUCCESS" | "AWAITING_PAYMENT" | "PENDING";
+  paymentMethod: "stripe" | "cod";
+  createdAt: string;
+}
+
 interface AppContextType {
   favorites: any[]; // Danh sách sản phẩm yêu thích
   favoriteCount: number; // Số lượng sản phẩm yêu thích
@@ -29,8 +40,21 @@ interface AppContextType {
   removeFavorite: (productId: string) => Promise<boolean>; // Hàm xóa yêu thích
   isFavorite: (productId: string) => boolean; // Kiểm tra sản phẩm có trong yêu thích không
   adminFavorites: FavoriteItem[];
-  fetchAdminFavorites: () => Promise<void>;
+  fetchAdminFavorites: (params?: {
+    page?: number;
+    limit?: number;
+  }) => Promise<void>;
   totalFavorites: number;
+  // order
+  orders: Order[];
+  totalOrders: number;
+  fetchAdminOrders: (params?: {
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
+  }) => Promise<void>;
 
   // Cart functionality
   cartItems: CartItem[];
@@ -64,6 +88,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [adminFavorites, setAdminFavorites] = useState<FavoriteItem[]>([]);
   const [totalFavorites, setTotalFavorites] = useState(0);
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -331,6 +358,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [favorites]
   );
 
+  // Order
+  const fetchAdminOrders = useCallback(
+    async ({
+      status = "",
+      startDate = "",
+      endDate = "",
+      page = 1,
+      limit = 10,
+    }: {
+      status?: string;
+      startDate?: string;
+      endDate?: string;
+      page?: number;
+      limit?: number;
+    } = {}) => {
+      try {
+        const params = new URLSearchParams();
+        if (status) params.append("status", status);
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+
+        const response = await fetch(`/api/admin/orders?${params.toString()}`, {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          console.error("Không thể lấy danh sách đơn hàng");
+          return;
+        }
+        const data = await response.json();
+        setOrders(data.orders || []);
+        setTotalOrders(data.totalCount || 0);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách đơn hàng:", error);
+      }
+    },
+    []
+  );
+
   return (
     <AppContext.Provider
       value={{
@@ -359,6 +426,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         appliedVoucher,
         applyVoucher,
         removeVoucher,
+        // order
+        orders,
+        totalOrders,
+        fetchAdminOrders,
       }}
     >
       {children}
