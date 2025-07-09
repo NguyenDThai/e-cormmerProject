@@ -30,6 +30,9 @@ export default function VoucherForm({
     expiresAt: "",
   });
 
+  // xét trường hợp có sửa hay không convert sang truthy falsthy
+  const isEditingVoucher = !!editingVoucher;
+
   useEffect(() => {
     if (editingVoucher) {
       setFormData({
@@ -100,18 +103,28 @@ export default function VoucherForm({
           name="code"
           value={formData.code}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          readOnly={isEditingVoucher}
+          className={
+            isEditingVoucher
+              ? "cursor-not-allowed w-full p-2 border rounded bg-gray-100"
+              : "w-full p-2 border rounded"
+          }
           required
         />
       </div>
       <div>
-        <label className="block">Giá trị</label>
+        <label className="block">Giá trị (%)</label>
         <input
           type="number"
           name="value"
           value={formData.value}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          readOnly={isEditingVoucher}
+          className={
+            isEditingVoucher
+              ? "cursor-not-allowed w-full p-2 border rounded bg-gray-100"
+              : "w-full p-2 border rounded"
+          }
           required
           min="0"
         />
