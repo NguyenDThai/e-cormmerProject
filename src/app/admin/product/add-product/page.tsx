@@ -211,18 +211,6 @@ const AddProductForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Giảm giá (Optional)</label>
-          <input
-            type="number"
-            name="salePrice"
-            value={formData.salePrice}
-            onChange={handleInputChange}
-            className="w-full border rounded p-2"
-            min="0"
-            step="0.01"
-          />
-        </div>
-        <div className="mb-4">
           <label className="block text-gray-700">Hình ảnh</label>
           <input
             type="file"

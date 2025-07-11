@@ -76,7 +76,7 @@ const CategoryProductContent = () => {
                         </p>
                       </div>
                     ) : (
-                      <p className="text-red-500 font-bold text-lg">
+                      <p className=" font-bold text-lg">
                         {product?.price?.toLocaleString("vi-VN")} đ
                       </p>
                     )}

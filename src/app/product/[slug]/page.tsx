@@ -78,7 +78,7 @@ const ProductDetail = async ({
                       </span>
                     </>
                   ) : (
-                    <span className="text-xl sm:text-2xl font-bold text-red-600">
+                    <span className="text-xl sm:text-2xl font-bold">
                       {productDetail.price?.toLocaleString("vi-VN")}đ
                     </span>
                   )}
