@@ -94,12 +94,13 @@ const AllProfile = () => {
           value={filterRole}
           onChange={handleFilterChange}
         >
-          <option value="all">All</option>
+          <option value="all">Tất cả</option>
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
       </div>
       <RenderAllUser
+        isAllUser={isAllUser}
         user={filteredUsers}
         updateUserRole={handleRoleChange}
         loading={loading}
