@@ -4,20 +4,40 @@ import { useAppContext } from "@/context/AppProvider";
 import { useSession } from "next-auth/react";
 import ReactPaginate from "react-paginate";
 
-// Định nghĩa interface cho Order
+interface OrderItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 interface Order {
   _id: string;
   orderId: string;
   userId: string;
   amount: number;
-  status: "SUCCESS" | "AWAITING_PAYMENT" | "PENDING";
-  paymentMethod: "stripe" | "cod";
+  status:
+    | "PENDING"
+    | "PROCESSING"
+    | "SUCCESS"
+    | "FAILED"
+    | "AWAITING_PAYMENT"
+    | "CANCELLED"
+    | "OVERDUE";
+  paymentMethod: "ZaloPay" | "stripe" | "cod";
+  items: OrderItem[];
+  zalopayTransId?: string;
+  stripeSessionId?: string;
+  paymentIntentId?: string;
+  codConfirmed: boolean;
   createdAt: string;
+  updatedAt: string;
 }
 
 const OrderAdminPage = () => {
   const { status } = useSession();
-  const { fetchAdminOrders, orders, totalOrders } = useAppContext();
+  const { fetchAdminOrders, orders, totalOrders, cancelOrder } =
+    useAppContext();
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -273,18 +293,18 @@ const OrderAdminPage = () => {
               className="p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Tất cả</option>
-              <option value="SUCCESS">Hoàn tất</option>
-              <option value="AWAITING_PAYMENT">Chờ thanh toán</option>
-              <option value="PENDING">Pending</option>
-            </select>
-          </div>
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Tất cả</option>
+            <option value="PENDING">Pending</option>
+            <option value="SUCCESS">Hoàn tất</option>
+            <option value="AWAITING_PAYMENT">Chờ thanh toán</option>
+            <option value="CANCELLED">Đã hủy</option>
+            <option value="OVERDUE">Quá hạn</option>
+          </select>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -297,7 +317,7 @@ const OrderAdminPage = () => {
               <th className="py-3 px-4 border-b">Trạng thái</th>
               <th className="py-3 px-4 border-b">Phương thức</th>
               <th className="py-3 px-4 border-b">Ngày đặt</th>
-              <th className="py-3 px-4 border-b">In hóa đơn</th>
+              <th className="py-3 px-4 border-b">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -315,6 +335,14 @@ const OrderAdminPage = () => {
                         ? "bg-green-100 text-green-800"
                         : order.status === "AWAITING_PAYMENT"
                         ? "bg-yellow-100 text-yellow-800"
+                        : order.status === "OVERDUE"
+                        ? "bg-red-100 text-red-800"
+                        : order.status === "CANCELLED"
+                        ? "bg-gray-100 text-gray-800"
+                        : order.status === "PROCESSING"
+                        ? "bg-blue-100 text-blue-800"
+                        : order.status === "FAILED"
+                        ? "bg-red-200 text-red-900"
                         : "bg-gray-100 text-gray-800"
                     }`}
                   >
@@ -322,22 +350,49 @@ const OrderAdminPage = () => {
                       ? "Hoàn tất"
                       : order.status === "AWAITING_PAYMENT"
                       ? "Chờ thanh toán"
+                      : order.status === "OVERDUE"
+                      ? "Quá hạn"
+                      : order.status === "CANCELLED"
+                      ? "Đã hủy"
+                      : order.status === "PROCESSING"
+                      ? "Đang xử lý"
+                      : order.status === "FAILED"
+                      ? "Thất bại"
                       : order.status}
                   </span>
                 </td>
                 <td className="py-3 px-4">
-                  {order.paymentMethod === "stripe" ? "Atm" : "Cod"}
+                  {order.paymentMethod === "ZaloPay"
+                    ? "ZaloPay"
+                    : order.paymentMethod === "stripe"
+                    ? "Atm"
+                    : "Cod"}
                 </td>
                 <td className="py-3 px-4">
                   {new Date(order.createdAt).toLocaleDateString("vi-VN")}
                 </td>
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 flex space-x-2 ">
                   <button
                     onClick={() => generateInvoice(order)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                    className={
+                      order.status === "CANCELLED"
+                        ? "px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition hidden"
+                        : "px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                    }
                   >
                     In hóa đơn
                   </button>
+                  {order.paymentMethod === "cod" &&
+                    order.status === "OVERDUE" && (
+                      <>
+                        <button
+                          onClick={() => cancelOrder(order.orderId)}
+                          className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                        >
+                          Hủy đơn
+                        </button>
+                      </>
+                    )}
                 </td>
               </tr>
             ))}
@@ -348,8 +403,8 @@ const OrderAdminPage = () => {
         <ReactPaginate
           pageCount={Math.ceil(totalOrders / itemsPerPage)}
           onPageChange={handlePageChange}
-          containerClassName="flex justify-center items-center space-x-2 mt-4 cursor-pointer"
-          pageClassName="px-3 py-1 border rounded hover:bg-gray-100 hover:text-black"
+          containerClassName="flex justify-center items-center space-x-2 mt-4"
+          pageClassName="px-3 py-1 border rounded hover:bg-gray-100 cursor-pointer"
           activeClassName="bg-blue-500 text-white"
           previousLabel="Trước"
           nextLabel="Sau"

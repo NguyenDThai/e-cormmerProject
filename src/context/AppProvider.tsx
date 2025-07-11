@@ -22,14 +22,34 @@ interface FavoriteItem {
 }
 
 // Định nghĩa interface cho Order
+interface OrderItem {
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 interface Order {
   _id: string;
   orderId: string;
   userId: string;
   amount: number;
-  status: "SUCCESS" | "AWAITING_PAYMENT" | "PENDING";
-  paymentMethod: "stripe" | "cod";
+  status:
+    | "PENDING"
+    | "PROCESSING"
+    | "SUCCESS"
+    | "FAILED"
+    | "AWAITING_PAYMENT"
+    | "CANCELLED"
+    | "OVERDUE";
+  paymentMethod: "ZaloPay" | "stripe" | "cod";
+  items: OrderItem[];
+  zalopayTransId?: string;
+  stripeSessionId?: string;
+  paymentIntentId?: string;
+  codConfirmed: boolean;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface AppContextType {
@@ -55,6 +75,10 @@ interface AppContextType {
     page?: number;
     limit?: number;
   }) => Promise<void>;
+  cancelOrder: (orderId: string) => Promise<void>;
+  contactCustomer: (orderId: string) => Promise<void>;
+  confirmOrder: (orderId: string) => Promise<void>;
+  fetchUserOrders: () => Promise<void>;
 
   // Cart functionality
   cartItems: CartItem[];
@@ -397,6 +421,104 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     []
   );
+  const cancelOrder = useCallback(
+    async (orderId: string) => {
+      try {
+        const response = await fetch("/api/admin/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, action: "cancel" }),
+          credentials: "include",
+        });
+        if (!response.ok) {
+          console.error("Không thể hủy đơn hàng");
+          return;
+        }
+        fetchAdminOrders({
+          status: "",
+          startDate: "",
+          endDate: "",
+          page: 1,
+          limit: 10,
+        });
+      } catch (error) {
+        console.error("Lỗi khi hủy đơn hàng:", error);
+      }
+    },
+    [fetchAdminOrders]
+  );
+
+  const contactCustomer = useCallback(async (orderId: string) => {
+    try {
+      const response = await fetch("/api/admin/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, action: "contact" }),
+        credentials: "include",
+      });
+      if (!response.ok) {
+        console.error("Không thể gửi yêu cầu liên hệ");
+        return;
+      }
+      alert("Yêu cầu liên hệ đã được gửi!");
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu liên hệ:", error);
+    }
+  }, []);
+  const fetchUserOrders = useCallback(async () => {
+    if (!session?.user?.id) {
+      setOrders([]);
+      return;
+    }
+    try {
+      const response = await fetch(`/api/orders?userId=${session.user.id}`, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        console.error("Không thể lấy danh sách đơn hàng");
+        return;
+      }
+      const data = await response.json();
+      setOrders(data || []);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách đơn hàng:", error);
+    }
+  }, [session?.user?.id]);
+
+  // user xác nhận đã nhận đượ hàng thì sẽ gọi request này
+  const confirmOrder = useCallback(
+    async (orderId: string) => {
+      console.log("Confirming order:", orderId);
+      try {
+        const response = await fetch("/api/orders/update-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, status: "SUCCESS" }),
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          let errorMessage = "Không thể xác nhận đơn hàng";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+          } catch {
+            console.error("Non-JSON response:", await response.text());
+          }
+          alert(errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        alert(data.message || "Xác nhận nhận hàng thành công!");
+        fetchUserOrders(); // Làm mới danh sách đơn hàng
+      } catch (error: any) {
+        console.error("Lỗi khi xác nhận đơn hàng:", error.message);
+        alert(error.message || "Đã xảy ra lỗi khi xác nhận đơn hàng");
+      }
+    },
+    [fetchUserOrders]
+  );
 
   return (
     <AppContext.Provider
@@ -430,6 +552,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         orders,
         totalOrders,
         fetchAdminOrders,
+        cancelOrder,
+        contactCustomer,
+        confirmOrder,
+        fetchUserOrders,
       }}
     >
       {children}

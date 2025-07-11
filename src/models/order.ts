@@ -13,12 +13,20 @@ interface IOrder extends Document {
   orderId: string;
   userId: Types.ObjectId;
   amount: number;
-  status: "PENDING" | "PROCESSING" | "SUCCESS" | "FAILED" | "AWAITING_PAYMENT" | "CANCELLED";
+  status:
+    | "PENDING"
+    | "PROCESSING"
+    | "SUCCESS"
+    | "FAILED"
+    | "AWAITING_PAYMENT"
+    | "CANCELLED"
+    | "OVERDUE";
   paymentMethod: "ZaloPay" | "stripe" | "cod";
   items: IOrderItem[];
   zalopayTransId?: string;
   stripeSessionId?: string;
   paymentIntentId?: string;
+  codConfirmed?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,7 +51,15 @@ const orderSchema: Schema<IOrder> = new Schema(
     },
     status: {
       type: String,
-      enum: ["PENDING", "PROCESSING", "SUCCESS", "FAILED", "AWAITING_PAYMENT", "CANCELLED"],
+      enum: [
+        "PENDING",
+        "PROCESSING",
+        "SUCCESS",
+        "FAILED",
+        "AWAITING_PAYMENT",
+        "CANCELLED",
+        "OVERDUE",
+      ],
       default: "PENDING",
     },
     paymentMethod: {
@@ -53,7 +69,11 @@ const orderSchema: Schema<IOrder> = new Schema(
     },
     items: [
       {
-        productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+        productId: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
         name: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true, min: 1 },
@@ -68,6 +88,10 @@ const orderSchema: Schema<IOrder> = new Schema(
     paymentIntentId: {
       type: String,
     },
+    codConfirmed: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, // Tự động quản lý createdAt và updatedAt
@@ -80,8 +104,10 @@ orderSchema.pre<IOrder>("save", function (next) {
   next();
 });
 
+delete mongoose.models.Order;
 // Tạo model
 const Order: Model<IOrder> =
-  (mongoose.models.Order as Model<IOrder>) || mongoose.model<IOrder>("Order", orderSchema);
+  (mongoose.models.Order as Model<IOrder>) ||
+  mongoose.model<IOrder>("Order", orderSchema);
 
 export default Order;
