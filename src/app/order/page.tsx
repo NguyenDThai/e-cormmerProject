@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppContext } from "@/context/AppProvider";
 import { toast } from "sonner";
+import ReviewModal from "@/components/ReviewModal";
 
 interface OrderItem {
   productId: string;
@@ -37,7 +38,17 @@ interface Order {
 
 const OrderPage = () => {
   const { data: session, status } = useSession();
-  const { confirmOrder, fetchUserOrders, orders } = useAppContext();
+  const {
+    confirmOrder,
+    fetchUserOrders,
+    orders,
+    userReviews,
+    fetchUserReviews,
+  } = useAppContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [selectedProductName, setSelectedProductName] = useState<string>("");
 
   useEffect(() => {
     if (status === "loading") return;
@@ -46,7 +57,32 @@ const OrderPage = () => {
       return;
     }
     fetchUserOrders();
-  }, [status, session, fetchUserOrders]);
+    fetchUserReviews();
+  }, [status, session, fetchUserOrders, fetchUserReviews]);
+
+  const openReviewModal = (
+    orderId: string,
+    productId: string,
+    productName: string
+  ) => {
+    setSelectedOrderId(orderId);
+    setSelectedProductId(productId);
+    setSelectedProductName(productName);
+    setIsModalOpen(true);
+  };
+
+  const closeReviewModal = () => {
+    setIsModalOpen(false);
+    setSelectedOrderId("");
+    setSelectedProductId("");
+    setSelectedProductName("");
+  };
+
+  const hasReviewedProduct = (orderId: string, productId: string) => {
+    return userReviews.some(
+      (review) => review.orderId === orderId && review.productId === productId
+    );
+  };
 
   if (status === "loading") {
     return <div>Đang tải...</div>;
@@ -214,24 +250,61 @@ const OrderPage = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      {order.paymentMethod === "cod" &&
-                        order.status === "AWAITING_PAYMENT" &&
-                        !order.codConfirmed && (
+                      <>
+                        {order.paymentMethod === "cod" &&
+                          order.status === "AWAITING_PAYMENT" &&
+                          !order.codConfirmed && (
+                            <div className="flex justify-end space-x-2">
+                              <button
+                                onClick={() => confirmOrder(order.orderId)}
+                                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                              >
+                                Xác nhận nhận hàng
+                              </button>
+                              <button
+                                onClick={() => handleCancelOrder(order.orderId)}
+                                className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                              >
+                                Hủy đơn
+                              </button>
+                            </div>
+                          )}
+                        {order.status === "SUCCESS" && (
                           <div className="flex justify-end space-x-2">
-                            <button
-                              onClick={() => confirmOrder(order.orderId)}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                              Xác nhận nhận hàng
-                            </button>
-                            <button
-                              onClick={() => handleCancelOrder(order.orderId)}
-                              className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                              Hủy đơn
-                            </button>
+                            {order.items.map((item) => (
+                              <button
+                                key={item.productId}
+                                onClick={() =>
+                                  openReviewModal(
+                                    order.orderId,
+                                    item.productId,
+                                    item.name
+                                  )
+                                }
+                                disabled={hasReviewedProduct(
+                                  order.orderId,
+                                  item.productId
+                                )}
+                                className={`inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white ${
+                                  hasReviewedProduct(
+                                    order.orderId,
+                                    item.productId
+                                  )
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-700"
+                                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+                              >
+                                {hasReviewedProduct(
+                                  order.orderId,
+                                  item.productId
+                                )
+                                  ? "Đã đánh giá"
+                                  : `Đánh giá`}
+                              </button>
+                            ))}
                           </div>
                         )}
+                      </>
                     </td>
                   </tr>
                 ))}
@@ -240,6 +313,14 @@ const OrderPage = () => {
           </div>
         )}
       </div>
+
+      <ReviewModal
+        isOpen={isModalOpen}
+        onClose={closeReviewModal}
+        productName={selectedProductName}
+        productId={selectedProductId}
+        orderId={selectedOrderId}
+      />
     </div>
   );
 };

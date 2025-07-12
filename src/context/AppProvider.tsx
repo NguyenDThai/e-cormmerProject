@@ -52,6 +52,17 @@ interface Order {
   updatedAt: string;
 }
 
+interface Review {
+  _id: string;
+  orderId: string;
+  userId: string;
+  productId: string;
+  rating: number;
+  comment: string;
+  isApproved: boolean;
+  createdAt: string;
+}
+
 interface AppContextType {
   favorites: any[]; // Danh sách sản phẩm yêu thích
   favoriteCount: number; // Số lượng sản phẩm yêu thích
@@ -65,6 +76,7 @@ interface AppContextType {
     limit?: number;
   }) => Promise<void>;
   totalFavorites: number;
+
   // order
   orders: Order[];
   totalOrders: number;
@@ -79,6 +91,24 @@ interface AppContextType {
   contactCustomer: (orderId: string) => Promise<void>;
   confirmOrder: (orderId: string) => Promise<void>;
   fetchUserOrders: () => Promise<void>;
+
+  // Review
+  submitReview: (
+    orderId: string,
+    productId: string,
+    rating: number,
+    comment: string
+  ) => Promise<void>;
+
+  fetchAdminReviews: (params?: {
+    page?: number;
+    limit?: number;
+    isApproved?: boolean;
+  }) => Promise<void>;
+  adminReviews: Review[];
+  totalReviews: number;
+  fetchUserReviews: () => Promise<void>;
+  userReviews: Review[];
 
   // Cart functionality
   cartItems: CartItem[];
@@ -115,6 +145,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalOrders, setTotalOrders] = useState<number>(0);
+
+  // Review
+  const [adminReviews, setAdminReviews] = useState<Review[]>([]);
+  const [totalReviews, setTotalReviews] = useState<number>(0);
+  const [userReviews, setUserReviews] = useState<Review[]>([]);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -485,7 +520,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session?.user?.id]);
 
-  // user xác nhận đã nhận đượ hàng thì sẽ gọi request này
+  // user xác nhận đã nhận được hàng thì sẽ gọi request này
   const confirmOrder = useCallback(
     async (orderId: string) => {
       console.log("Confirming order:", orderId);
@@ -519,6 +554,87 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     [fetchUserOrders]
   );
+
+  const submitReview = useCallback(
+    async (
+      orderId: string,
+      productId: string,
+      rating: number,
+      comment: string
+    ) => {
+      try {
+        const response = await fetch("/api/review", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, productId, rating, comment }),
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Không thể gửi đánh giá");
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (error: any) {
+        console.error("Lỗi khi gửi đánh giá:", error.message);
+        throw error;
+      }
+    },
+    []
+  );
+
+  const fetchAdminReviews = useCallback(
+    async ({
+      page = 1,
+      limit = 10,
+      isApproved,
+    }: { page?: number; limit?: number; isApproved?: boolean } = {}) => {
+      try {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (isApproved !== undefined)
+          params.append("isApproved", isApproved.toString());
+
+        const response = await fetch(`/api/admin/review?${params.toString()}`, {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          console.log("Khong the lay danh sach danh gia");
+          return;
+        }
+        const data = await response.json();
+        setAdminReviews(data.reviews || []);
+        setTotalReviews(data.totalCount || 0);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách đánh giá:", error);
+      }
+    },
+    []
+  );
+
+  const fetchUserReviews = useCallback(async () => {
+    if (!session?.user?.id) {
+      setUserReviews([]);
+      return;
+    }
+    try {
+      const response = await fetch(`/api/review?userId=${session.user.id}`, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        console.error("Không thể lấy danh sách đánh giá của người dùng");
+        return;
+      }
+      const data = await response.json();
+      setUserReviews(data.reviews || []);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách đánh giá của người dùng:", error);
+    }
+  }, [session?.user?.id]);
 
   return (
     <AppContext.Provider
@@ -556,6 +672,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         contactCustomer,
         confirmOrder,
         fetchUserOrders,
+
+        // review
+        submitReview,
+        fetchAdminReviews,
+        adminReviews,
+        totalReviews,
+        fetchUserReviews,
+        userReviews,
       }}
     >
       {children}
