@@ -78,6 +78,18 @@ const OrderPage = () => {
     setSelectedProductName("");
   };
 
+  const handleConfirmOrder = async (orderId: string) => {
+    try {
+      await confirmOrder(orderId);
+      await fetchUserOrders();
+      await fetchUserReviews(); // Làm mới reviews sau khi xác nhận đơn hàng
+      toast.success("Xác nhận nhận hàng thành công");
+    } catch (error) {
+      console.error("Error confirming order:", error);
+      toast.error("Lỗi khi xác nhận đơn hàng");
+    }
+  };
+
   const hasReviewedProduct = (orderId: string, productId: string) => {
     return userReviews.some(
       (review) => review.orderId === orderId && review.productId === productId
@@ -158,6 +170,12 @@ const OrderPage = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
+                    Tên sản phẩm
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Tổng tiền
                   </th>
                   <th
@@ -195,6 +213,11 @@ const OrderPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-blue-600">
                         #{order.orderId}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium">
+                        {order.items[0].name}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -256,7 +279,9 @@ const OrderPage = () => {
                           !order.codConfirmed && (
                             <div className="flex justify-end space-x-2">
                               <button
-                                onClick={() => confirmOrder(order.orderId)}
+                                onClick={() =>
+                                  handleConfirmOrder(order.orderId)
+                                }
                                 className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                               >
                                 Xác nhận nhận hàng

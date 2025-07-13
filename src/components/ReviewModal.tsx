@@ -19,7 +19,7 @@ const ReviewModal = ({
   orderId,
   productId,
 }: ReviewModalProps) => {
-  const { submitReview } = useAppContext();
+  const { submitReview, fetchUserReviews } = useAppContext();
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -34,6 +34,7 @@ const ReviewModal = ({
 
     try {
       await submitReview(orderId, productId, rating, comment);
+      await fetchUserReviews();
       toast.success("Đánh giá đã được gửi, đang chờ duyệt");
       onClose();
     } catch (error: any) {

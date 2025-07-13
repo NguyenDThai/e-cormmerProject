@@ -7,6 +7,8 @@ import Link from "next/link";
 import ImageProductDetail from "@/components/ImageProductDetail";
 import ButtonAddToCard from "@/components/ButtonAddToCard";
 import QuantityProduct from "@/components/QuantityProduct";
+import RenderReviews from "@/components/RenderReviews";
+import Review from "@/models/review";
 // import FavoriteButton from "@/components/FavoriteButton";
 
 const getProductBySlug = async (name: string) => {
@@ -17,6 +19,21 @@ const getProductBySlug = async (name: string) => {
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+
+const getReviewsByProduct = async (productId: string) => {
+  try {
+    await connectToDatabase();
+    const reviews = await Review.find({ productId, isApproved: true })
+      .select("rating comment createdAt userId")
+      .populate("userId", "name")
+      .lean();
+
+    return JSON.parse(JSON.stringify(reviews));
+  } catch (error) {
+    console.log("Error fetching reviews:", error);
+    return [];
   }
 };
 // Api goi san pham lien quan
@@ -41,11 +58,22 @@ const ProductDetail = async ({
   const productDetail = await getProductBySlug(decodedSlug);
   // Api loc theo loai san pham để render tất cả sản phẩm có liên quan (vd: điện thoại thì render tất cả các sản phẩm liên quan đến điện thoại)
   const categoryProduct = await relatedProduct(productDetail?.category);
+  const reviews = await getReviewsByProduct(productDetail._id);
+
+  // Tính điểm đánh giá trung bình
+  const averageRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce(
+            (sum: number, review: { rating: number }) => sum + review.rating,
+            0
+          ) / reviews.length
+        ).toFixed(1)
+      : "Chưa có";
 
   if (!productDetail) {
     return <div>Product not found</div>;
   }
-  console.log("Product Detail:", productDetail);
 
   return (
     <div className="container mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 h-full">
@@ -116,6 +144,8 @@ const ProductDetail = async ({
             </button>
           </div>
         </div>
+        {/* Render reviews */}
+        <RenderReviews reviews={reviews} averageRating={averageRating} />
       </div>
 
       {/* Related Products */}
@@ -159,7 +189,7 @@ const ProductDetail = async ({
                             </p>
                           </div>
                         ) : (
-                          <p className="text-red-500 font-bold text-base sm:text-lg">
+                          <p className="font-bold text-base sm:text-lg">
                             {product?.price?.toLocaleString("vi-VN")} đ
                           </p>
                         )}
@@ -169,7 +199,7 @@ const ProductDetail = async ({
                       <div className="flex items-center">
                         <StarIcon className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />
                         <span className="text-gray-600 text-xs sm:text-sm ml-1">
-                          {"4.5"}
+                          {averageRating}
                         </span>
                       </div>
                     </div>

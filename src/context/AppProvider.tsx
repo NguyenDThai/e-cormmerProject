@@ -109,6 +109,8 @@ interface AppContextType {
   totalReviews: number;
   fetchUserReviews: () => Promise<void>;
   userReviews: Review[];
+  fetchReviews: (productId: string) => Promise<void>;
+  reviews: Review[];
 
   // Cart functionality
   cartItems: CartItem[];
@@ -150,6 +152,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [adminReviews, setAdminReviews] = useState<Review[]>([]);
   const [totalReviews, setTotalReviews] = useState<number>(0);
   const [userReviews, setUserReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -636,6 +639,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session?.user?.id]);
 
+  const fetchReviews = useCallback(async (productId: string) => {
+    try {
+      const response = await fetch(`/api/review?productId=${productId}`, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        console.error("Không thể lấy danh sách đánh giá cho sản phẩm");
+        return;
+      }
+      const data = await response.json();
+      setReviews(data.reviews || []);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách đánh giá cho sản phẩm:", error);
+    }
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -680,6 +699,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         totalReviews,
         fetchUserReviews,
         userReviews,
+        fetchReviews,
+        reviews,
       }}
     >
       {children}

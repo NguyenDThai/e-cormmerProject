@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import ButtonAddToCard from "@/components/ButtonAddToCard";
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
@@ -113,12 +112,13 @@ const RenderAllProduct = () => {
                       </p>
                     )}
                   </div>
-
-                  {/* Rating (optional) */}
-                  <div className="flex items-center">
-                    <StarIcon className="w-4 h-4 text-yellow-400" />
-                    <span className="text-gray-600 text-sm ml-1">{"4.5"}</span>
-                  </div>
+                </div>
+                {/* Rating (optional) */}
+                <div className="flex items-center pt-4">
+                  <StarIcon className="w-4 h-4 text-yellow-400 " />
+                  <StarIcon className="w-4 h-4 text-yellow-400 " />
+                  <StarIcon className="w-4 h-4 text-yellow-400 " />
+                  <StarIcon className="w-4 h-4 text-yellow-400 " />
                 </div>
 
                 {/* Add to Cart Button */}
