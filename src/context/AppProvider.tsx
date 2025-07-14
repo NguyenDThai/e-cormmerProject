@@ -91,6 +91,7 @@ interface AppContextType {
   contactCustomer: (orderId: string) => Promise<void>;
   confirmOrder: (orderId: string) => Promise<void>;
   fetchUserOrders: () => Promise<void>;
+  fetchAllAdminOrders: () => Promise<void>;
 
   // Review
   submitReview: (
@@ -459,6 +460,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     []
   );
+
+  const fetchAllAdminOrders = useCallback(async () => {
+    if (!session?.user?.role || session.user.role !== "admin") {
+      console.error("Only admins can fetch all orders");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/orders/all", {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) throw new Error("Failed to fetch all orders");
+      const data = await response.json();
+
+      setOrders(data.orders || []);
+    } catch (error) {
+      console.error("Error fetching all orders:", error);
+      setOrders([]);
+    }
+  }, [session]);
   const cancelOrder = useCallback(
     async (orderId: string) => {
       try {
@@ -687,6 +709,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         orders,
         totalOrders,
         fetchAdminOrders,
+        fetchAllAdminOrders,
         cancelOrder,
         contactCustomer,
         confirmOrder,

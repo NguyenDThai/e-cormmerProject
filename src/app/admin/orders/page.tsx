@@ -403,7 +403,7 @@ const OrderAdminPage = () => {
         <ReactPaginate
           pageCount={Math.ceil(totalOrders / itemsPerPage)}
           onPageChange={handlePageChange}
-          containerClassName="flex justify-center items-center space-x-2 mt-4"
+          containerClassName="flex justify-center items-center space-x-2 mt-4 "
           pageClassName="px-3 py-1 border rounded hover:bg-gray-100 cursor-pointer"
           activeClassName="bg-blue-500 text-white"
           previousLabel="Trước"
