@@ -47,7 +47,7 @@ const Header = () => {
             <nav className="hidden lg:flex items-center space-x-8 ml-12">
               {[
                 { name: "Trang chủ", href: "/" },
-                { name: "Cửa hàng", href: "#" },
+                { name: "Cửa hàng", href: "/store" },
                 { name: "Về chúng tôi", href: "/about" },
                 { name: "Liên hệ", href: "/contact" },
               ].map((item) => (

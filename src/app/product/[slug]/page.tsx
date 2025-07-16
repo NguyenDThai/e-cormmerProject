@@ -58,7 +58,7 @@ const ProductDetail = async ({
   const productDetail = await getProductBySlug(decodedSlug);
   // Api loc theo loai san pham để render tất cả sản phẩm có liên quan (vd: điện thoại thì render tất cả các sản phẩm liên quan đến điện thoại)
   const categoryProduct = await relatedProduct(productDetail?.category);
-  const reviews = await getReviewsByProduct(productDetail._id);
+  const reviews = await getReviewsByProduct(productDetail?._id);
 
   // Tính điểm đánh giá trung bình
   const averageRating =
