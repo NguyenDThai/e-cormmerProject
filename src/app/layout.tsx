@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import ClientSessionProvider from "@/components/ClientSessionProvider";
 import Footer from "@/components/Footer";
 import { AppProvider } from "@/context/AppProvider";
+import ChatBot from "@/components/ChatBot";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,6 +26,7 @@ export default function RootLayout({
             <Toaster position="top-center" richColors />
             <Header />
             <main>{children}</main>
+            <ChatBot />
             <Footer />
           </AppProvider>
         </ClientSessionProvider>
