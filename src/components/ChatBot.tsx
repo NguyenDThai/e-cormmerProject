@@ -86,7 +86,7 @@ const ChatBot = () => {
           {/* Modal chat */}
           {isOpen && (
             <div
-              className="w-full max-w-md bg-white shadow-lg rounded-t-lg flex flex-col fixed bottom-10 right-25"
+              className="w-full max-w-md bg-white shadow-lg rounded-t-lg flex flex-col fixed bottom-10 right-25 z-50"
               style={{ height: "500px" }}
             >
               {/* Header */}
