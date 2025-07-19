@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { CiHeart, CiSearch, CiShoppingCart } from "react-icons/ci";
 import { useAppContext } from "@/context/AppProvider";
 import SearchBar from "@/components/SearchBar";
+import Image from "next/image";
 
 const Header = () => {
   const { favoriteCount, fetchFavorites, cartItemCount } = useAppContext();
@@ -34,12 +35,19 @@ const Header = () => {
 
       {/* Main Header - Elegant & Clean */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo - Modern Typography */}
-            <Link href="/" className="flex-shrink-0">
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              <Image
+                src="/headerlogo3.png"
+                alt=""
+                width={160}
+                height={40}
+                className="object-contain max-h-[80px] w-[90px] bg-transparent"
+              />
               <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                BlackStore
+                Black Store
               </h2>
             </Link>
 

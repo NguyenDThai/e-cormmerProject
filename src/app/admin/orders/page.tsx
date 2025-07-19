@@ -66,97 +66,164 @@ const OrderAdminPage = () => {
     // Logic in hóa đơn (giữ nguyên hoặc tùy chỉnh)
     // Tạo nội dung HTML cho hóa đơn
     const invoiceContent = `
-    <html>
+<html>
   <head>
     <title>Hóa đơn ${order.orderId}</title>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      
       body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f5f5f5;
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fafb;
         padding: 0;
         margin: 0;
+        color: #111827;
       }
       .invoice-container {
         max-width: 800px;
         margin: 30px auto;
         background: white;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
         overflow: hidden;
+        border: 1px solid #e5e7eb;
       }
       .invoice-header {
-        background: #4f46e5;
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
         color: white;
         padding: 30px;
         text-align: center;
+        position: relative;
       }
-      .invoice-header h1 {
-        margin: 0;
+      .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 10px;
+      }
+      .logo-img {
+        height: 60px;
+        margin-bottom: 10px;
+        border-radius: 50%;
+      }
+      .store-name {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin: 5px 0 0;
+      }
+      .invoice-title {
+        margin: 15px 0 0;
         font-size: 28px;
         font-weight: 700;
+        letter-spacing: 1px;
       }
       .invoice-body {
-        padding: 30px;
+        padding: 30px 40px;
       }
       .invoice-info {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 25px;
         margin-bottom: 30px;
       }
       .invoice-info-item {
-        margin-bottom: 15px;
+        margin-bottom: 18px;
       }
       .invoice-info-item .label {
-        font-weight: 600;
-        color: #555;
+        font-weight: 500;
+        color: #6b7280;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
         font-size: 14px;
+        letter-spacing: 0.3px;
       }
       .invoice-info-item .value {
-        font-size: 16px;
-        color: #333;
+        font-size: 15px;
+        color: #111827;
+        font-weight: 500;
       }
       .status {
         display: inline-block;
-        padding: 5px 10px;
+        padding: 6px 12px;
         border-radius: 20px;
         font-weight: 600;
-        font-size: 14px;
+        font-size: 13px;
+        letter-spacing: 0.3px;
       }
       .status-success {
-        background-color: #d1fae5;
-        color: #065f46;
+        background-color: #dcfce7;
+        color: #166534;
       }
       .status-pending {
-        background-color: #fef3c7;
-        color: #92400e;
+        background-color: #fef9c3;
+        color: #854d0e;
+      }
+      .status-processing {
+        background-color: #dbeafe;
+        color: #1e40af;
+      }
+      .total-payment {
+        background: #f3f4f6;
+        padding: 25px;
+        border-radius: 8px;
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .total-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #374151;
+      }
+      .total-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e40af;
       }
       .print-btn {
         display: block;
         width: 200px;
-        margin: 30px auto 0;
-        padding: 12px;
-        background: #4f46e5;
+        margin: 40px auto 0;
+        padding: 12px 20px;
+        background: #1e40af;
         color: white;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
         text-align: center;
+        font-size: 15px;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
       }
       .print-btn:hover {
-        background: #4338ca;
+        background: #1e3a8a;
         transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(30, 64, 175, 0.2);
       }
       .invoice-footer {
         padding: 20px;
         text-align: center;
-        color: #777;
+        color: #6b7280;
         font-size: 14px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+      }
+      .watermark {
+        position: absolute;
+        opacity: 0.03;
+        font-size: 120px;
+        font-weight: 800;
+        transform: rotate(-15deg);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-15deg);
+        user-select: none;
+        pointer-events: none;
       }
       @media print {
         body {
@@ -166,6 +233,7 @@ const OrderAdminPage = () => {
           box-shadow: none;
           margin: 0;
           max-width: 100%;
+          border: none;
         }
         .print-btn {
           display: none;
@@ -176,7 +244,12 @@ const OrderAdminPage = () => {
   <body>
     <div class="invoice-container">
       <div class="invoice-header">
-        <h1>HÓA ĐƠN THANH TOÁN</h1>
+        <div class="watermark">BLACKSTORE</div>
+        <div class="logo-container">
+          <img src='/headerlogo3.png' class="logo-img" alt="BlackStore Logo" />
+          <p class="store-name">Black Store</p>
+        </div>
+        <h1 class="invoice-title">HÓA ĐƠN THANH TOÁN</h1>
       </div>
       
       <div class="invoice-body">
@@ -192,13 +265,13 @@ const OrderAdminPage = () => {
                 order.createdAt
               ).toLocaleDateString("vi-VN")}</span>
             </div>
+            <div class="invoice-info-item">
+              <span class="label">Khách hàng</span>
+              <span class="value">${order.userId}</span>
+            </div>
           </div>
           
           <div>
-            <div class="invoice-info-item">
-              <span class="label">User ID</span>
-              <span class="value">${order.userId}</span>
-            </div>
             <div class="invoice-info-item">
               <span class="label">Phương thức thanh toán</span>
               <span class="value">${
@@ -207,43 +280,49 @@ const OrderAdminPage = () => {
                   : "Thanh toán khi nhận hàng"
               }</span>
             </div>
+            <div class="invoice-info-item">
+              <span class="label">Trạng thái đơn hàng</span>
+              <span class="value">
+                <span class="status ${
+                  order.status === "SUCCESS"
+                    ? "status-success"
+                    : order.status === "PROCESSING"
+                    ? "status-processing"
+                    : "status-pending"
+                }">
+                  ${
+                    order.status === "SUCCESS"
+                      ? "Hoàn tất"
+                      : order.status === "AWAITING_PAYMENT"
+                      ? "Chờ thanh toán"
+                      : order.status === "PROCESSING"
+                      ? "Đang xử lý"
+                      : order.status
+                  }
+                </span>
+              </span>
+            </div>
           </div>
         </div>
         
-        <div class="invoice-info-item">
-          <span class="label">Trạng thái đơn hàng</span>
-          <span class="value">
-            <span class="status ${
-              order.status === "SUCCESS" ? "status-success" : "status-pending"
-            }">
-              ${
-                order.status === "SUCCESS"
-                  ? "Hoàn tất"
-                  : order.status === "AWAITING_PAYMENT"
-                  ? "Chờ thanh toán"
-                  : order.status
-              }
-            </span>
-          </span>
-        </div>
-        
-        <div class="invoice-info-item" style="margin-top: 30px;">
-          <span class="label" style="font-size: 18px;">Tổng thanh toán</span>
-          <span class="value" style="font-size: 24px; font-weight: 700; color: #4f46e5;">
-            ${order.amount.toLocaleString("vi-VN")} đ
-          </span>
+        <div class="total-payment">
+          <span class="total-label">Tổng thanh toán</span>
+          <span class="total-value">${order.amount.toLocaleString(
+            "vi-VN"
+          )}₫</span>
         </div>
       </div>
       
       <button class="print-btn" onclick="window.print()">In hóa đơn</button>
       
       <div class="invoice-footer">
-        Cảm ơn quý khách đã sử dụng dịch vụ của chúng tôi
+        <p>Cảm ơn quý khách đã mua sắm tại BlackStore</p>
+        <p>Hotline: 0869240149 | Email: support@blackstore.com</p>
       </div>
     </div>
   </body>
 </html>
-  `;
+`;
 
     // Mở cửa sổ mới và ghi nội dung HTML
     const invoiceWindow = window.open("", "_blank");
