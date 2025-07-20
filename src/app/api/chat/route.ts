@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import connectToDatabase from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import User, { IUser } from "@/models/user";
 import { authOptions } from "@/lib/auth";
+import Product from "@/models/product";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -12,9 +14,12 @@ const openai = new OpenAI({
 // Danh sach cac chu de duoc ho tro
 const ALLOWED_TOPICS = [
   "sản phẩm",
+  "xin chào",
   "đơn hàng",
   "thanh toán",
   "thông tin tài khoản",
+  "tôi là ai",
+  "bạn biết gì về tôi",
 ];
 
 // Hàm kiểm tra xem tin nhắn có liên quan đến chủ đề được phép hay không
@@ -27,13 +32,49 @@ const isRelatedToAllowedTopics = (message: string): boolean => {
 const isAboutMeQuestion = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
   return (
-    lowerMessage.includes("bạn biết gì về tôi") ||
-    lowerMessage.includes("thông tin của tôi") ||
-    lowerMessage.includes("tôi là ai") ||
-    lowerMessage.includes("thông tin cá nhân") ||
-    lowerMessage.includes("tài khoản của tôi") ||
-    lowerMessage.includes("hồ sơ của tôi")
+    lowerMessage.match(
+      /\b(bạn biết gì về tôi|thông tin của tôi|tôi là ai|thông tin cá nhân|tài khoản của tôi|hồ sơ của tôi)\b/
+    ) !== null && !lowerMessage.includes("hỗ trợ gì về")
   );
+};
+
+// Ham kiem tra cau hoi san pham
+const isProductListQuestion = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+
+  return (
+    lowerMessage.match(
+      /\b(liệt kê sản phẩm|danh sách sản phẩm|sản phẩm có sẵn|các sản phẩm|sản phẩm)\b/
+    ) !== null && !isAboutMeQuestion(message)
+  );
+};
+
+const fetchProduct = async (): Promise<string> => {
+  try {
+    await connectToDatabase();
+    const products = await Product.find()
+      .select("name price salePrice")
+      .lean()
+      .limit(10);
+
+    if (!products || products.length === 0) {
+      return "Hiện tại không có sản phẩm nào.";
+    }
+
+    const productList = products
+      .map(
+        (product) =>
+          `- Tên: ${product.name}, Giá: ${product.price}đ, Giảm giá: ${
+            product.salePrice ? product.salePrice + "đ" : ""
+          }`
+      )
+      .join("\n");
+
+    return `Danh sách sản phẩm :\n${productList}`;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return "Đã xảy ra lỗi khi lấy danh sách sản phẩm. Vui lòng thử lại sau.";
+  }
 };
 
 export async function POST(request: Request) {
@@ -42,16 +83,34 @@ export async function POST(request: Request) {
 
     const { messages } = await request.json();
 
-    if (!messages || !Array.isArray(messages)) {
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
         { error: "Messages array is required" },
         { status: 400 }
       );
     }
 
+    // Lấy tin nhắn cuối cùng từ người dùng (role: "user")
+    const userMessages = messages.filter((msg: any) => msg.role === "user");
+    const lastUserMessage = userMessages[userMessages.length - 1];
+
     // Kiểm tra tin nhắn cuối cùng có liên quan đến chủ đề được phép hay không
-    const lastMessage = messages[messages.length - 1];
-    if (!lastMessage || !isRelatedToAllowedTopics(lastMessage.content)) {
+    if (
+      !lastUserMessage ||
+      !lastUserMessage.content ||
+      lastUserMessage.content.trim() === ""
+    ) {
+      return NextResponse.json(
+        {
+          reply:
+            "Vui lòng nhập câu hỏi cụ thể về sản phẩm, đơn hàng, thông tin cá nhân, hoặc hỗ trợ khách hàng.",
+        },
+        { status: 200 }
+      );
+    }
+
+    // Kiểm tra tin nhắn có liên quan đến chủ đề được phép hay không
+    if (!isRelatedToAllowedTopics(lastUserMessage.content)) {
       return NextResponse.json(
         {
           reply:
@@ -62,11 +121,19 @@ export async function POST(request: Request) {
     }
 
     await connectToDatabase();
-    let userInfo = "";
-    let isAboutMe = false;
 
-    if (session?.user?.email) {
-      // Truy vấn thông tin người dùng từ MongoDB, chỉ lấy các trường cần thiết
+    // Xử lý câu hỏi về thông tin cá nhân
+    if (isAboutMeQuestion(lastUserMessage.content)) {
+      if (!session?.user?.email) {
+        return NextResponse.json(
+          {
+            reply:
+              "Bạn cần đăng nhập để xem thông tin cá nhân. Vui lòng đăng nhập và thử lại.",
+          },
+          { status: 200 }
+        );
+      }
+
       const user: IUser | null = await User.findOne({
         email: session.user.email,
       })
@@ -74,19 +141,38 @@ export async function POST(request: Request) {
         .lean();
 
       if (user) {
-        // Kiểm tra nếu là câu hỏi "Bạn biết gì về tôi?"
-        isAboutMe = isAboutMeQuestion(lastMessage.content);
-        if (isAboutMe) {
-          userInfo = `
-            Thông tin của bạn:
-            Tên: ${user.name},
-            Email: ${user.email},
-            Số điện thoại: ${user.phone || "Chưa cập nhật"},
-            Địa chỉ: ${user.address || "Chưa cập nhật"}
-          `;
+        const userInfo = `
+          Thông tin của bạn:
+          Tên: ${user.name},
+          Email: ${user.email},
+          Số điện thoại: ${user.phone || "Chưa cập nhật"},
+          Địa chỉ: ${user.address || "Chưa cập nhật"}
+        `;
+        return NextResponse.json({ reply: userInfo.trim() }, { status: 200 });
+      } else {
+        return NextResponse.json(
+          { reply: "Không tìm thấy thông tin người dùng." },
+          { status: 200 }
+        );
+      }
+    }
 
-          return NextResponse.json({ reply: userInfo.trim() }, { status: 200 });
-        }
+    // Xu ly san pham
+    if (isProductListQuestion(lastUserMessage.content)) {
+      const productList = await fetchProduct();
+      return NextResponse.json({ reply: productList }, { status: 200 });
+    }
+
+    let userInfo = "";
+    // Lấy thông tin người dùng để cung cấp ngữ cảnh cho OpenAI (nếu cần)
+    if (session?.user?.email) {
+      const user: IUser | null = await User.findOne({
+        email: session.user.email,
+      })
+        .select("name email phone address")
+        .lean();
+
+      if (user) {
         userInfo = `
           Thông tin người dùng:
           - Tên: ${user.name}

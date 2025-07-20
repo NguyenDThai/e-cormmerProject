@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
 interface Message {
@@ -8,9 +8,7 @@ interface Message {
 }
 
 const ChatBot = () => {
-  const [messages, setMessages] = React.useState<Message[]>([
-    { role: "assistant", content: "Xin chào tôi có thể giúp gì được cho bạn?" },
-  ]);
+  const [messages, setMessages] = React.useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +18,8 @@ const ChatBot = () => {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const useSerMessage: Message = { role: "user", content: input };
+    const useSerMessage: Message = { role: "user", content: input.trim() };
+    const updatedMessages = [...messages, useSerMessage];
     setMessages((prevMessages) => [...prevMessages, useSerMessage]);
     setInput("");
     setLoading(true);
@@ -31,7 +30,7 @@ const ChatBot = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ messages: updatedMessages }),
       });
 
       const data = await res.json();
@@ -59,6 +58,10 @@ const ChatBot = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setMessages([]);
+  }, []);
 
   return (
     <>
