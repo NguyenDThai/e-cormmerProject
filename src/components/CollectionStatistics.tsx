@@ -59,9 +59,12 @@ const CollectionStatistics = () => {
   const { orders, fetchAllAdminOrders } = useAppContext();
   const { data: session } = useSession();
   const [timeRange, setTimeRange] = useState<"day" | "month" | "year">("month");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
   // Kiểm tra quyền admin
   const isAdmin = session?.user?.role === "admin";
+  console.log(orders);
 
   // Gọi fetchAllAdminOrders khi component được mount
   useEffect(() => {
@@ -74,10 +77,19 @@ const CollectionStatistics = () => {
   const revenueData: RevenueData[] = useMemo(() => {
     if (!isAdmin) return [];
 
-    console.log("Orders for revenue calculation:", orders.length, orders); // Log để kiểm tra
+    const filteredOrders = orders.filter((order: Order) => {
+      const orderDate = new Date(order.createdAt);
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      if (start && end) {
+        return orderDate >= start && orderDate <= end;
+      }
+      return true; // Nếu không có ngày bắt đầu hoặc kết thúc, không lọc
+    });
 
     const groupedRevenue: { [key: string]: number } = {};
-    orders.forEach((order: Order) => {
+    filteredOrders.forEach((order: Order) => {
       const date = new Date(order.createdAt);
       let key: string;
       if (timeRange === "day") {
@@ -99,9 +111,8 @@ const CollectionStatistics = () => {
       .sort((a, b) => a.time.localeCompare(b.time));
     console.log("Revenue data:", result); // Log để kiểm tra
     return result;
-  }, [orders, isAdmin, timeRange]);
+  }, [orders, isAdmin, timeRange, startDate, endDate]);
 
-  // Tính tổng doanh thu
   // Tính tổng doanh thu
   const totalRevenue = useMemo(
     () =>
@@ -177,17 +188,33 @@ const CollectionStatistics = () => {
         <h2 className="text-xl sm:text-2xl font-semibold">
           Thống kê doanh thu
         </h2>
-        <select
-          value={timeRange}
-          onChange={(e) =>
-            setTimeRange(e.target.value as "day" | "month" | "year")
-          }
-          className="p-2 border rounded-md bg-white text-gray-700"
-        >
-          <option value="day">Theo ngày</option>
-          <option value="month">Theo tháng</option>
-          <option value="year">Theo năm</option>
-        </select>
+        <div className="flex items-center flex-row-reverse gap-5">
+          <select
+            value={timeRange}
+            onChange={(e) =>
+              setTimeRange(e.target.value as "day" | "month" | "year")
+            }
+            className="p-2 border rounded-md bg-white text-gray-700"
+          >
+            <option value="day">Theo ngày</option>
+            <option value="month">Theo tháng</option>
+            <option value="year">Theo năm</option>
+          </select>
+          <div className="flex gap-3">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="p-2 border rounded-md bg-white text-gray-700"
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="p-2 border rounded-md bg-white text-gray-700"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Tổng quan doanh thu */}
