@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -12,8 +12,10 @@ export async function GET(request: Request) {
 
   try {
     await connectToDatabase();
-    const orders = await Order.find({ status: "SUCCESS" })
-      .select("_id amount createdAt items")
+    const orders = await Order.find({
+      status: { $in: ["SUCCESS", "CANCELLED"] },
+    })
+      .select("_id amount createdAt items status")
       .lean();
 
     return NextResponse.json({ orders });

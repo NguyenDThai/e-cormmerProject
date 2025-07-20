@@ -83,9 +83,11 @@ const CollectionStatistics = () => {
       const end = endDate ? new Date(endDate) : null;
 
       if (start && end) {
-        return orderDate >= start && orderDate <= end;
+        return (
+          order.status === "SUCCESS" && orderDate >= start && orderDate <= end
+        );
       }
-      return true; // Nếu không có ngày bắt đầu hoặc kết thúc, không lọc
+      return order.status === "SUCCESS"; // Nếu không có ngày bắt đầu hoặc kết thúc, không lọc
     });
 
     const groupedRevenue: { [key: string]: number } = {};
@@ -124,10 +126,21 @@ const CollectionStatistics = () => {
     [revenueData, isAdmin]
   );
 
-  // Tính số đơn hàng
+  // Tính số đơn hàng thanh công
   const totalOrders = useMemo(() => {
-    const count = isAdmin ? orders.length : 0;
+    const count = isAdmin
+      ? orders.filter((order: Order) => order.status === "SUCCESS").length
+      : 0;
     console.log("Total orders:", count); // Log để kiểm tra
+    return count;
+  }, [orders, isAdmin]);
+
+  // tinh tong so don hang bi huy
+  const totalCancelledOrders = useMemo(() => {
+    const count = isAdmin
+      ? orders.filter((order: Order) => order.status === "CANCELLED").length
+      : 0;
+    console.log("Total cancelled orders:", count); // Log để kiểm tra
     return count;
   }, [orders, isAdmin]);
 
@@ -224,10 +237,22 @@ const CollectionStatistics = () => {
           <p className="text-2xl font-bold text-blue-600">{totalRevenue} đ</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <h3 className="text-lg font-medium text-gray-700">
-            Số đơn hàng thành công
-          </h3>
-          <p className="text-2xl font-bold text-blue-600">{totalOrders}</p>
+          <div className="flex items-center gap-10">
+            <div>
+              <h3 className="text-lg font-medium text-gray-700">
+                Số đơn hàng thành công
+              </h3>
+              <p className="text-2xl font-bold text-blue-600">{totalOrders}</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-700">
+                Số đơn hàng bị hủy
+              </h3>
+              <p className="text-2xl font-bold text-red-600">
+                {totalCancelledOrders}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
