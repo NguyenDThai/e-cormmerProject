@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -20,8 +21,17 @@ export default function OrderConfirmation() {
       <h1 className="text-2xl font-bold">Xác nhận đơn hàng COD</h1>
       {orderId ? (
         <p>
-          Đơn hàng của bạn với mã {orderId} đã được tạo thành công! Vui lòng
-          chuẩn bị tiền mặt để thanh toán khi nhận hàng.
+          Đơn hàng của bạn với mã{" "}
+          <span className="text-blue-600">{orderId}</span> đã được tạo thành
+          công! Vui lòng chuẩn bị tiền mặt để thanh toán khi nhận hàng.Lưu ý
+          rằng đơn hàng này sẽ được giao trong vòng 3-5 ngày làm việc.Sau khi
+          nhận hàng, bạn có thể xác nhận đơn hàng trong phần{" "}
+          <Link href="/order" className="text-blue-600 hover:underline">
+            Đơn hàng
+          </Link>
+          .Sau khi xác nhận, bạn sẽ không thể hủy đơn hàng này nữa.Sau thời gian
+          trên bạn không xác nhận thì đơn hàng sẽ tự động hủy và bạn sẽ không
+          thể nhận hàng nữa.
         </p>
       ) : (
         <p>Không tìm thấy thông tin đơn hàng.</p>

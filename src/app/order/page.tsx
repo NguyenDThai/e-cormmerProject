@@ -83,7 +83,6 @@ const OrderPage = () => {
       await confirmOrder(orderId);
       await fetchUserOrders();
       await fetchUserReviews(); // Làm mới reviews sau khi xác nhận đơn hàng
-      toast.success("Xác nhận nhận hàng thành công");
     } catch (error) {
       console.error("Error confirming order:", error);
       toast.error("Lỗi khi xác nhận đơn hàng");

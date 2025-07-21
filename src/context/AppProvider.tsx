@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { CartItem } from "@/models/cart";
+import { toast } from "sonner";
 
 interface FavoriteItem {
   productId: string;
@@ -548,7 +549,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // user xác nhận đã nhận được hàng thì sẽ gọi request này
   const confirmOrder = useCallback(
     async (orderId: string) => {
-      console.log("Confirming order:", orderId);
       try {
         const response = await fetch("/api/orders/update-status", {
           method: "POST",
@@ -570,7 +570,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
 
         const data = await response.json();
-        alert(data.message || "Xác nhận nhận hàng thành công!");
+        toast.success("Xác nhận nhận hàng thành công!");
         fetchUserOrders(); // Làm mới danh sách đơn hàng
       } catch (error: any) {
         console.error("Lỗi khi xác nhận đơn hàng:", error.message);

@@ -7,7 +7,6 @@ import { Suspense } from "react";
 function PaymentSuccess() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-
   useEffect(() => {
     if (sessionId) {
       console.log("Payment successful, session ID:", sessionId);

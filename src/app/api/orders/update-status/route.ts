@@ -94,9 +94,8 @@ export async function POST(request: Request) {
     ) {
       order.status = "OVERDUE";
       await order.save();
-      console.log("Order marked as OVERDUE:", order.orderId);
       return NextResponse.json(
-        { message: "Order is overdue and cannot be confirmed" },
+        { message: "Đơn đặc hàng của bạn đã quá hạn" },
         { status: 400 }
       );
     }
