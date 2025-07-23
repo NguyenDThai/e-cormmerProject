@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -423,6 +424,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   // Order
+  // Admin loc don hàng theo trang thai, thoi gian
   const fetchAdminOrders = useCallback(
     async ({
       status = "",
@@ -482,6 +484,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setOrders([]);
     }
   }, [session]);
+
   const cancelOrder = useCallback(
     async (orderId: string) => {
       try {
@@ -526,6 +529,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       console.error("Lỗi khi gửi yêu cầu liên hệ:", error);
     }
   }, []);
+
+  // Lấy danh sách đơn hàng cho từng user
   const fetchUserOrders = useCallback(async () => {
     if (!session?.user?.id) {
       setOrders([]);

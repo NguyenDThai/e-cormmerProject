@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import User, { IUser } from "@/models/user";
 import { authOptions } from "@/lib/auth";
 import Product from "@/models/product";
+import Order from "@/models/order";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -49,6 +50,17 @@ const isProductListQuestion = (message: string): boolean => {
   );
 };
 
+// Ham kiem tra cau hoi don hang
+const isOrderListQuestion = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+  return (
+    lowerMessage.match(
+      /\b(liệt kê đơn hàng|danh sách đơn hàng|đơn hàng của tôi|các đơn hàng|đơn hàng đã hoàn tất|đơn hàng thành công)\b/
+    ) !== null && !isAboutMeQuestion(message)
+  );
+};
+
+// Ham lay danh sach san pham tu csdl
 const fetchProduct = async (): Promise<string> => {
   try {
     await connectToDatabase();
@@ -64,8 +76,10 @@ const fetchProduct = async (): Promise<string> => {
     const productList = products
       .map(
         (product) =>
-          `- Tên: ${product.name}, Giá: ${product.price}đ, Giảm giá: ${
-            product.salePrice ? product.salePrice + "đ" : ""
+          `- Tên: ${
+            product.name
+          }, Giá: ${product.price.toLocaleString()}đ, Giảm giá: ${
+            product.salePrice ? product.salePrice.toLocaleString() + "đ" : ""
           }`
       )
       .join("\n");
@@ -74,6 +88,58 @@ const fetchProduct = async (): Promise<string> => {
   } catch (error) {
     console.error("Error fetching products:", error);
     return "Đã xảy ra lỗi khi lấy danh sách sản phẩm. Vui lòng thử lại sau.";
+  }
+};
+
+// Hàm lấy danh sách đơn hàng từ MongoDB
+
+const fetchOrders = async (
+  userEmail: string,
+  status?: string
+): Promise<string> => {
+  try {
+    await connectToDatabase();
+    const user = await User.findOne({ email: userEmail }).select("_id").lean();
+    if (!user) {
+      return "Không tìm thấy thông tin người dùng.";
+    }
+
+    const query: any = { userId: user._id };
+    if (status) query.status = status;
+    const orders = await Order.find(query)
+      .populate("items.productId")
+      .select("orderId amount status paymentMethod createdAt items")
+      .lean()
+      .limit(10)
+      .sort({ createdAt: -1 });
+
+    if (!orders || orders.length === 0) {
+      return `Bạn hiện không có đơn hàng${
+        status ? ` ${status.toLowerCase()}` : ""
+      } nào.`;
+    }
+
+    const orderList = orders
+      .map(
+        (order) =>
+          `- Mã đơn hàng: ${
+            order.orderId
+          }, Tổng tiền: ${order.amount.toLocaleString()}đ, Trạng thái: ${
+            order.status
+          }, Phương thức: ${order.paymentMethod}, Ngày đặt: ${new Date(
+            order.createdAt
+          ).toLocaleDateString("vi-VN")}\n  Sản phẩm: ${order.items
+            .map((item: any) => item.name)
+            .join(", ")}`
+      )
+      .join("\n");
+
+    return `Danh sách đơn hàng${
+      status ? ` ${status.toLowerCase()}` : ""
+    } của bạn:\n${orderList}`;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return "Đã xảy ra lỗi khi lấy danh sách đơn hàng. Vui lòng thử lại sau.";
   }
 };
 
@@ -161,6 +227,28 @@ export async function POST(request: Request) {
     if (isProductListQuestion(lastUserMessage.content)) {
       const productList = await fetchProduct();
       return NextResponse.json({ reply: productList }, { status: 200 });
+    }
+
+    // Xu ly don hang
+
+    if (isOrderListQuestion(lastUserMessage.content)) {
+      if (!session?.user?.email) {
+        console.log("Session validation failed: user not logged in");
+        return NextResponse.json(
+          {
+            reply:
+              "Bạn cần đăng nhập để xem danh sách đơn hàng. Vui lòng đăng nhập và thử lại.",
+          },
+          { status: 200 }
+        );
+      }
+
+      const statusMatch = lastUserMessage.content
+        .toLowerCase()
+        .match(/đã hoàn tất|thành công/i);
+      const status = statusMatch ? "SUCCESS" : undefined;
+      const orderList = await fetchOrders(session.user.email, status);
+      return NextResponse.json({ reply: orderList }, { status: 200 });
     }
 
     let userInfo = "";
