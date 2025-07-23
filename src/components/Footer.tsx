@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const Footer = () => {
@@ -16,41 +17,41 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/"
                   className="text-gray-400 hover:text-white transition duration-300"
                 >
-                  Home
-                </a>
+                  Trang chủ
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/store"
                   className="text-gray-400 hover:text-white transition duration-300"
                 >
-                  Products
-                </a>
+                  Sản phẩm
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/about"
                   className="text-gray-400 hover:text-white transition duration-300"
                 >
-                  Services
-                </a>
+                  Về chúng tôi
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/contact"
                   className="text-gray-400 hover:text-white transition duration-300"
                 >
-                  Contact
-                </a>
+                  Liên hệ với chúng tôi
+                </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-xl font-bold mb-4">Contact Us</h3>
+            <h3 className="text-xl font-bold mb-4">Thông tin của chúng tôi</h3>
             <address className="text-gray-400 not-italic">
               Ninh Kieu
               <br />

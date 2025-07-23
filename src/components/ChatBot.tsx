@@ -94,7 +94,7 @@ const ChatBot = () => {
             >
               {/* Header */}
               <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
-                <h2 className="text-lg font-bold">Trợ lý ảo</h2>
+                <h2 className="text-lg font-bold">Black Store AI</h2>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setIsOpen(false)}
