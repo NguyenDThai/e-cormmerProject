@@ -7,7 +7,8 @@ export async function POST(request: Request) {
   const { name, email, password, confirmPassword } = await request.json();
 
   const isValidEmail = (email: string) => {
-    const emailRegex = /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/;
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailRegex.test(email);
   };
   if (!name || !email || !password || !confirmPassword) {
@@ -18,20 +19,20 @@ export async function POST(request: Request) {
   }
   if (!isValidEmail) {
     return NextResponse.json(
-      { message: "Invalid email format" },
+      { message: "Định dạng email không hợp lệ" },
       { status: 400 }
     );
   }
   if (confirmPassword !== password) {
     return NextResponse.json(
-      { message: "Password do not match" },
+      { message: "Vui lòng nhập đúng mật khẩu trên" },
       { status: 400 }
     );
   }
   if (password.length < 6) {
     return NextResponse.json(
       {
-        message: "Password must be at least 6 charater long",
+        message: "Mật khẩu phải có ít nhất 6 ký tự",
       },
       { status: 400 }
     );
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { message: "User already axist" },
+        { message: "Tài khoản đã tồn tại" },
         { status: 400 }
       );
     }
@@ -54,7 +55,10 @@ export async function POST(request: Request) {
       password: hashedPassword,
     });
     await newUser.save();
-    return NextResponse.json({ message: "User created" }, { status: 201 });
+    return NextResponse.json(
+      { message: "Đã đăng ký tài khoản thành công" },
+      { status: 201 }
+    );
   } catch {
     return NextResponse.json(
       { message: "Something went wrong" },

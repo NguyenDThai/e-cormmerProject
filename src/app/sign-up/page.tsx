@@ -67,7 +67,7 @@ const SignUp = () => {
 
   return (
     <div className="h-full flex items-center justify-center bg-white my-11">
-      <Card className="w-[90%] sm:w-[450px] p-6 shadow-lg border border-gray-200 rounded-xl bg-white">
+      <Card className="w-[90%]  sm:w-[450px] p-6 shadow-lg border border-gray-200 rounded-xl bg-white">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-2">
             {/* Có thể thêm logo ở đây */}
@@ -88,10 +88,10 @@ const SignUp = () => {
             </div>
           </div>
           <CardTitle className="text-center text-2xl font-bold text-gray-800">
-            Create Account
+            Tạo tài khoản
           </CardTitle>
           <CardDescription className="text-center text-gray-500">
-            Join us to get started
+            Tham gia cùng chúng tôi để trải nghiệm những tính năng tuyệt vời
           </CardDescription>
         </CardHeader>
 
@@ -110,7 +110,7 @@ const SignUp = () => {
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Full Name
+                  Họ và tên
                 </label>
                 <Input
                   id="name"
@@ -148,7 +148,7 @@ const SignUp = () => {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Password
+                  Mật khẩu
                 </label>
                 <Input
                   id="password"
@@ -169,7 +169,7 @@ const SignUp = () => {
                   htmlFor="confirmPassword"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Confirm Password
+                  Nhập lại mật khẩu
                 </label>
                 <Input
                   id="confirmPassword"
@@ -215,7 +215,7 @@ const SignUp = () => {
                   Creating account...
                 </span>
               ) : (
-                "Sign Up"
+                "Đăng ký"
               )}
             </Button>
           </form>
@@ -226,7 +226,7 @@ const SignUp = () => {
             </div>
             <div className="relative flex justify-center">
               <span className="px-2 bg-white text-sm text-gray-500">
-                or continue with
+                Có thể đăng ký nhanh bằng
               </span>
             </div>
           </div>
@@ -252,12 +252,12 @@ const SignUp = () => {
           </div>
 
           <p className="text-center text-sm mt-6 text-gray-500">
-            Already have an account?{" "}
+            Bạn đã có tài khoản?{" "}
             <Link
               href="/sign-in"
               className="text-indigo-600 hover:text-indigo-800 font-medium hover:underline transition"
             >
-              Sign in
+              Đăng nhập ngay
             </Link>
           </p>
         </CardContent>
