@@ -578,7 +578,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         toast.success("Xác nhận nhận hàng thành công!");
         fetchUserOrders(); // Làm mới danh sách đơn hàng
       } catch (error: any) {
-        console.error("Lỗi khi xác nhận đơn hàng:", error.message);
         alert(error.message || "Đã xảy ra lỗi khi xác nhận đơn hàng");
       }
     },
