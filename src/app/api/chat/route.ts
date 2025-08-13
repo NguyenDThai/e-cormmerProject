@@ -21,6 +21,7 @@ const ALLOWED_TOPICS = [
   "thông tin tài khoản",
   "tôi là ai",
   "bạn biết gì về tôi",
+  "giá",
 ];
 
 // Hàm kiểm tra xem tin nhắn có liên quan đến chủ đề được phép hay không
@@ -60,6 +61,19 @@ const isOrderListQuestion = (message: string): boolean => {
   );
 };
 
+// Ham hoi ve gia san pham
+const isProductPriceQuestion = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+  return (
+    lowerMessage.match(
+      /\b(giá của|giá sản phẩm|hỏi giá|bao nhiêu|tôi muốn biết giá)\b/
+    ) !== null &&
+    !isAboutMeQuestion(message) &&
+    !isProductListQuestion(message) &&
+    !isOrderListQuestion(message)
+  );
+};
+
 // Ham lay danh sach san pham tu csdl
 const fetchProduct = async (): Promise<string> => {
   try {
@@ -91,8 +105,39 @@ const fetchProduct = async (): Promise<string> => {
   }
 };
 
-// Hàm lấy danh sách đơn hàng từ MongoDB
+// Hàm lấy giá sản phẩm từ MongoDB
+const fetchProductPrice = async (productName: string): Promise<string> => {
+  try {
+    await connectToDatabase();
+    console.log("Searching for product with name:", productName);
+    const products = await Product.find({
+      name: { $regex: productName, $options: "i" }, // Tìm kiếm không phân biệt hoa thường
+    })
+      .select("name price salePrice")
+      .lean()
+      .limit(1);
 
+    console.log("Fetched products:", JSON.stringify(products, null, 2));
+    if (!products || products.length === 0) {
+      return `Không tìm thấy sản phẩm "${productName}". Vui lòng kiểm tra lại tên sản phẩm.`;
+    }
+
+    const product = products[0];
+    const priceInfo = `Giá của ${
+      product.name
+    }: ${product.price.toLocaleString()}đ${
+      product.salePrice
+        ? `, Giảm giá: ${product.salePrice.toLocaleString()}đ`
+        : ""
+    }`;
+    return priceInfo;
+  } catch (error) {
+    console.error("Error fetching product price:", error);
+    return "Đã xảy ra lỗi khi lấy giá sản phẩm. Vui lòng thử lại sau.";
+  }
+};
+
+// Hàm lấy danh sách đơn hàng từ MongoDB
 const fetchOrders = async (
   userEmail: string,
   status?: string
@@ -230,7 +275,6 @@ export async function POST(request: Request) {
     }
 
     // Xu ly don hang
-
     if (isOrderListQuestion(lastUserMessage.content)) {
       if (!session?.user?.email) {
         console.log("Session validation failed: user not logged in");
@@ -249,6 +293,28 @@ export async function POST(request: Request) {
       const status = statusMatch ? "SUCCESS" : undefined;
       const orderList = await fetchOrders(session.user.email, status);
       return NextResponse.json({ reply: orderList }, { status: 200 });
+    }
+
+    // Xử lý câu hỏi về giá sản phẩm
+    if (isProductPriceQuestion(lastUserMessage.content)) {
+      const productNameMatch = lastUserMessage.content
+        .toLowerCase()
+        .match(
+          /\b(giá của|giá sản phẩm|hỏi giá|bao nhiêu|tôi muốn biết giá)\s+(.+?)(?=\s*(giá|$))/
+        );
+      const productName = productNameMatch ? productNameMatch[2].trim() : "";
+      console.log("Extracted product name:", productName);
+      if (!productName) {
+        return NextResponse.json(
+          {
+            reply: "Vui lòng cung cấp tên sản phẩm cụ thể để tôi kiểm tra giá.",
+          },
+          { status: 200 }
+        );
+      }
+
+      const priceInfo = await fetchProductPrice(productName);
+      return NextResponse.json({ reply: priceInfo }, { status: 200 });
     }
 
     let userInfo = "";

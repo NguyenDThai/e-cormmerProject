@@ -28,7 +28,7 @@ const Statistical = () => {
           onClick={() => setView("collection")}
           variant={view === "products" ? "default" : "outline"}
         >
-          Thống kê sản phẩm
+          Thống kê doanh thu
         </Button>
       </div>
       {view === "users" && <UserStatistics />}
