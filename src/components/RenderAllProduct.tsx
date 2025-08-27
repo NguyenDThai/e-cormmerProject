@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import ButtonAddToCard from "@/components/ButtonAddToCard";
-import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -13,6 +12,7 @@ export type ProductList = [
   {
     _id: string;
     name: string;
+    category: string;
     images: string[];
     price: number;
     salePrice: number;
@@ -95,7 +95,8 @@ const RenderAllProduct = () => {
                   {product?.name}
                 </h3>
 
-                <div className="flex items-center justify-between mt-3">
+                <div className="mt-3">
+                  <p className="font-light text-sm">{product.category}</p>
                   <div className="flex items-center space-x-2">
                     {product?.salePrice ? (
                       <div className="flex items-center gap-1.5">
@@ -112,13 +113,6 @@ const RenderAllProduct = () => {
                       </p>
                     )}
                   </div>
-                </div>
-                {/* Rating (optional) */}
-                <div className="flex items-center pt-4">
-                  <StarIcon className="w-4 h-4 text-yellow-400 " />
-                  <StarIcon className="w-4 h-4 text-yellow-400 " />
-                  <StarIcon className="w-4 h-4 text-yellow-400 " />
-                  <StarIcon className="w-4 h-4 text-yellow-400 " />
                 </div>
 
                 {/* Add to Cart Button */}

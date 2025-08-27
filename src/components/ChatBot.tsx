@@ -65,7 +65,7 @@ const ChatBot = () => {
 
   return (
     <>
-      {session && (
+      {session?.user.role === "user" && (
         <>
           <button
             onClick={() => setIsOpen(true)}
