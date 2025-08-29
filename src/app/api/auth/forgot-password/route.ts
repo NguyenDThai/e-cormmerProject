@@ -4,7 +4,6 @@ import connectToDatabase from "@/lib/mongodb";
 import User, { IUser } from "@/models/user";
 import PasswordResetToken from "@/models/passwordResetToken";
 import { NextResponse } from "next/server";
-import IUser from "@/models/user";
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_SERVER,
