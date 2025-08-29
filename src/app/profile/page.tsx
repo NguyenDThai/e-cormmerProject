@@ -23,6 +23,9 @@ const Profile = () => {
     name: "",
     address: "",
     phone: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -30,13 +33,16 @@ const Profile = () => {
       try {
         const response = await fetch("/api/profile");
         const data = await response.json();
-        console.log("Fetched user:", data);
+
         if (response.ok) {
           setUser(data.users);
           setFormData({
             name: data.users.name || "",
             address: data.users.address || "",
             phone: data.users.phone || "",
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
           });
         } else {
           throw new Error("Không nhận được user");
@@ -58,7 +64,22 @@ const Profile = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log("Sending formData:", formData);
+      // Validate password
+      if (
+        formData.newPassword ||
+        formData.confirmPassword ||
+        formData.currentPassword
+      ) {
+        if (formData.newPassword !== formData.confirmPassword) {
+          toast.error("Nhập lại mật khẩu không đúng");
+          return;
+        }
+        if (!formData.currentPassword) {
+          toast.error("Vui lòng nhập mật khẩu hiện tại");
+          return;
+        }
+      }
+
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: {
@@ -67,7 +88,7 @@ const Profile = () => {
         body: JSON.stringify(formData),
       });
       const result = await response.json();
-      console.log("PUT response:", result);
+
       if (response.ok) {
         setUser(result.users);
         setIsEditing(false);
@@ -76,10 +97,13 @@ const Profile = () => {
           name: result.users.name || "",
           address: result.users.address || "",
           phone: result.users.phone || "",
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
         });
         toast.success("Cập nhật thành công");
       } else {
-        throw new Error(result.error || "Cập nhật thất bại");
+        toast.error(result.message);
       }
     } catch (error: any) {
       console.log("Client error:", error);
@@ -88,7 +112,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden">
+      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-center mb-9">
           <h1 className="text-3xl font-bold text-white">Thông tin cá nhân</h1>
@@ -171,6 +195,45 @@ const Profile = () => {
                     type="text"
                     name="phone"
                     value={formData.phone}
+                    onChange={handleInputChange}
+                    className="text-gray-800 sm:flex-1 px-3 py-2 bg-white rounded-md border border-gray-200"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                  Thay đổi mật khẩu
+                </h3>
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <span className="text-gray-600 font-medium sm:w-32">
+                    Nhập mật khẩu hiện tại:
+                  </span>
+                  <input
+                    type="password"
+                    name="currentPassword"
+                    value={formData.currentPassword}
+                    onChange={handleInputChange}
+                    className="text-gray-800 sm:flex-1 px-3 py-2 bg-white rounded-md border border-gray-200"
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <span className="text-gray-600 font-medium sm:w-32">
+                    Nhập mật khẩu mới:
+                  </span>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={formData.newPassword}
+                    onChange={handleInputChange}
+                    className="text-gray-800 sm:flex-1 px-3 py-2 bg-white rounded-md border border-gray-200"
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <span className="text-gray-600 font-medium sm:w-32">
+                    Nhập lại mật khẩu mới:
+                  </span>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className="text-gray-800 sm:flex-1 px-3 py-2 bg-white rounded-md border border-gray-200"
                   />
