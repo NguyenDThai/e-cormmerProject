@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useFlashSale } from "@/hooks/useFlashSale";
+import { Button } from "./ui/button";
 
 export type ProductList = [
   {
@@ -21,6 +22,7 @@ export type ProductList = [
 
 const RenderAllProduct = () => {
   const [productList, setProductList] = useState<ProductList | []>([]);
+  const [displayCount, setDisplayCount] = useState(8);
   const { data: session } = useSession();
   const { activeFlashSale } = useFlashSale();
 
@@ -65,10 +67,18 @@ const RenderAllProduct = () => {
     fetchProductList();
   }, [activeFlashSale]);
 
+  const handleShowMore = () => {
+    setDisplayCount(productList.length);
+  };
+
+  const handleHideMore = () => {
+    setDisplayCount(8);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 ">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {productList.map((product) => (
+        {productList.slice(0, displayCount).map((product) => (
           <Link href={`/product/${product.name}`} key={product._id}>
             <div className="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
               {session?.user.role === "user" && (
@@ -122,6 +132,26 @@ const RenderAllProduct = () => {
           </Link>
         ))}
       </div>
+
+      {displayCount < productList.length ? (
+        <div className="flex items-center justify-center">
+          <Button
+            className="mt-5 bg-blue-600 text-white cursor-pointer hover:bg-blue-700 text-[16px]"
+            onClick={handleShowMore}
+          >
+            Xem thêm
+          </Button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center ">
+          <Button
+            className="mt-5 bg-blue-600 text-white cursor-pointer hover:bg-blue-700 text-[16px]"
+            onClick={handleHideMore}
+          >
+            Ẩn bớt
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
