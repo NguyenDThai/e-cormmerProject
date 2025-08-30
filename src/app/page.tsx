@@ -15,6 +15,7 @@ import { CiLogout } from "react-icons/ci";
 import BestSellingProduct from "@/components/BestSellingProduct";
 import BannerFooter from "@/components/BannerFooter";
 import ProductNewArrival from "@/components/ProductNewArrival";
+import ServicesSection from "@/components/ServicesSection";
 
 export default function Home() {
   const {
@@ -421,6 +422,9 @@ export default function Home() {
 
           {/* Product new arrival */}
           <ProductNewArrival />
+
+          {/* Service section */}
+          <ServicesSection />
         </div>
       </main>
     </div>
