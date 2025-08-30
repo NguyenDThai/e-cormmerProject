@@ -16,6 +16,7 @@ import BestSellingProduct from "@/components/BestSellingProduct";
 import BannerFooter from "@/components/BannerFooter";
 import ProductNewArrival from "@/components/ProductNewArrival";
 import ServicesSection from "@/components/ServicesSection";
+import BackToTop from "@/components/BackToTop";
 
 export default function Home() {
   const {
@@ -427,6 +428,8 @@ export default function Home() {
           <ServicesSection />
         </div>
       </main>
+
+      <BackToTop />
     </div>
   );
 }
