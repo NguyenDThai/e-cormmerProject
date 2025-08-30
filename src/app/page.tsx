@@ -17,6 +17,7 @@ import BannerFooter from "@/components/BannerFooter";
 import ProductNewArrival from "@/components/ProductNewArrival";
 import ServicesSection from "@/components/ServicesSection";
 import BackToTop from "@/components/BackToTop";
+import BrandSlider from "@/components/BrandSlider";
 
 export default function Home() {
   const {
@@ -314,122 +315,128 @@ export default function Home() {
   }
 
   return (
-    <div className="container min-h-screen flex flex-col mx-auto ">
-      {/* Banner */}
-      <main className="flex-grow">
-        <Banner />
-        {/* Content Sections */}
-        <div className="container mx-auto px-4 py-12">
-          {/* Flash Sale Banner */}
-          {hasActiveFlashSale && activeFlashSale && (
-            <FlashSaleBanner
-              flashSale={activeFlashSale}
-              onExpire={handleFlashSaleExpire}
-            />
-          )}
-
-          {/* Featured Section - Flash Sale Products */}
-          {(isLoading || hasActiveFlashSale) && (
-            <section className="mb-16">
-              <FlashSaleSectionHeader
+    <>
+      <div className="container min-h-screen flex flex-col mx-auto ">
+        {/* Banner */}
+        <main className="flex-grow">
+          <Banner />
+          {/* Content Sections */}
+          <div className="container mx-auto px-4 py-12">
+            {/* Flash Sale Banner */}
+            {hasActiveFlashSale && activeFlashSale && (
+              <FlashSaleBanner
                 flashSale={activeFlashSale}
-                isLoading={isLoading}
-                error={error}
-                onRetry={refreshFlashSale}
+                onExpire={handleFlashSaleExpire}
               />
+            )}
 
-              {/* Products in Flash Sale */}
-              {hasActiveFlashSale && <ProductFeatured />}
-            </section>
-          )}
+            {/* Featured Section - Flash Sale Products */}
+            {(isLoading || hasActiveFlashSale) && (
+              <section className="mb-16">
+                <FlashSaleSectionHeader
+                  flashSale={activeFlashSale}
+                  isLoading={isLoading}
+                  error={error}
+                  onRetry={refreshFlashSale}
+                />
 
-          {/* No Flash Sale Message */}
-          {!isLoading && !hasActiveFlashSale && !error && (
-            <section className="mb-16">
-              <div className="flex flex-col">
-                <div className="flex items-center">
-                  <span className="w-[20px] h-[40px] bg-gray-400 block rounded-md"></span>
-                  <p className="text-lg text-gray-500 ml-4">Flash Sale</p>
-                </div>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center mt-4">
-                  <div className="text-gray-500 mb-2">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400 mb-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <h3 className="text-lg font-medium">
-                      Hiện tại chưa có Flash Sale
-                    </h3>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Hãy theo dõi để không bỏ lỡ các deal hấp dẫn sắp tới!
-                    </p>
+                {/* Products in Flash Sale */}
+                {hasActiveFlashSale && <ProductFeatured />}
+              </section>
+            )}
+
+            {/* No Flash Sale Message */}
+            {!isLoading && !hasActiveFlashSale && !error && (
+              <section className="mb-16">
+                <div className="flex flex-col">
+                  <div className="flex items-center">
+                    <span className="w-[20px] h-[40px] bg-gray-400 block rounded-md"></span>
+                    <p className="text-lg text-gray-500 ml-4">Flash Sale</p>
+                  </div>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center mt-4">
+                    <div className="text-gray-500 mb-2">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400 mb-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <h3 className="text-lg font-medium">
+                        Hiện tại chưa có Flash Sale
+                      </h3>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Hãy theo dõi để không bỏ lỡ các deal hấp dẫn sắp tới!
+                      </p>
+                    </div>
                   </div>
                 </div>
+              </section>
+            )}
+
+            {/* categories */}
+            <section className="mb-16">
+              <div className="flex items-center">
+                <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
+                <p className="text-lg text-blue-500 ml-4">Danh sách sản phẩm</p>
               </div>
+              <h2 className="text-4xl font-semibold mt-5">
+                Theo thể loại sản phẩm
+              </h2>
+              <div className="w-20 h-1 bg-blue-600 mt-4"></div>
+
+              <CategoriesList />
             </section>
-          )}
 
-          {/* categories */}
-          <section className="mb-16">
-            <div className="flex items-center">
-              <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
-              <p className="text-lg text-blue-500 ml-4">Danh sách sản phẩm</p>
-            </div>
-            <h2 className="text-4xl font-semibold mt-5">
-              Theo thể loại sản phẩm
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mt-4"></div>
+            {/* San pham cua chung toi */}
+            <section>
+              <div className="flex items-center">
+                <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
+                <p className="text-lg text-blue-500 ml-4">
+                  Sản phẩm của chúng tôi
+                </p>
+              </div>
+              <h2 className="text-4xl font-semibold mt-5">
+                Khám phá sản phẩm của chúng tôi
+              </h2>
+              <div className="w-20 h-1 bg-blue-600 mt-4"></div>
+              <RenderAllProduct />
+            </section>
 
-            <CategoriesList />
-          </section>
+            {/* Banner footer */}
+            <BannerFooter />
 
-          {/* San pham cua chung toi */}
-          <section>
-            <div className="flex items-center">
-              <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
-              <p className="text-lg text-blue-500 ml-4">
-                Sản phẩm của chúng tôi
-              </p>
-            </div>
-            <h2 className="text-4xl font-semibold mt-5">
-              Khám phá sản phẩm của chúng tôi
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mt-4"></div>
-            <RenderAllProduct />
-          </section>
+            {/* Best selling */}
+            <section className="mb-16">
+              <div className="flex items-center">
+                <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
+                <p className="text-lg text-blue-500 ml-4">Danh sách sản phẩm</p>
+              </div>
+              <h2 className="text-4xl font-semibold mt-5">Sản phẩm bán chạy</h2>
+              <div className="w-20 h-1 bg-blue-600 mt-4"></div>
+              <BestSellingProduct />
+            </section>
 
-          {/* Banner footer */}
-          <BannerFooter />
+            {/* Product new arrival */}
+            <ProductNewArrival />
 
-          {/* Best selling */}
-          <section className="mb-16">
-            <div className="flex items-center">
-              <span className="w-[20px] h-[40px] bg-blue-600 block rounded-md"></span>
-              <p className="text-lg text-blue-500 ml-4">Danh sách sản phẩm</p>
-            </div>
-            <h2 className="text-4xl font-semibold mt-5">Sản phẩm bán chạy</h2>
-            <div className="w-20 h-1 bg-blue-600 mt-4"></div>
-            <BestSellingProduct />
-          </section>
+            {/* Service section */}
+            <ServicesSection />
+          </div>
+        </main>
 
-          {/* Product new arrival */}
-          <ProductNewArrival />
+        <BackToTop />
+      </div>
 
-          {/* Service section */}
-          <ServicesSection />
-        </div>
-      </main>
-
-      <BackToTop />
-    </div>
+      <div className="mb-16">
+        <BrandSlider />
+      </div>
+    </>
   );
 }
