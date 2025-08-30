@@ -37,6 +37,8 @@ const ReviewModal = ({
       await fetchUserReviews();
       toast.success("Đánh giá đã được gửi, đang chờ duyệt");
       onClose();
+      setComment("");
+      setRating(0);
     } catch (error: any) {
       toast.error(error.message || "Lỗi khi gửi đánh giá");
     } finally {
