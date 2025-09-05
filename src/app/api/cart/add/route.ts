@@ -20,11 +20,16 @@ export async function POST(request: Request) {
     }
 
     const { productId, quantity } = await request.json();
-    console.log("Request body:", { productId, quantity });
+
     // Kiem tra san pham
     const product = await Product.findById(productId);
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    } else if (product.quantity === 0) {
+      return NextResponse.json(
+        { message: "Product out of stock" },
+        { status: 400 }
+      );
     }
     // Lấy user từ email
     const user = await User.findOne({ email: session.user.email });

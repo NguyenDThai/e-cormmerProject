@@ -30,7 +30,9 @@ const ButtonAddToCard = ({ productId }: ButtonAddToCardProps) => {
         toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`);
         fetchCart();
       } else if (response.status === 401) {
-        toast.error("Vui long dang nhap de them san pham vao gio hang");
+        toast.error("Vui lòng dăng nhập để thêm sản phẩm vào giỏ hàng");
+      } else if (response.status === 400) {
+        toast.error("Sản phẩm đã hết hàng");
       }
     } catch (error) {
       console.error("Error adding to cart:", error);

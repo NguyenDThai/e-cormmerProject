@@ -114,9 +114,13 @@ const ProductDetail = async ({
 
                 <QuantityProduct productDetail={productDetail} />
               </div>
-              {productDetail.quantity && (
+              {productDetail.quantity > 0 ? (
                 <span className="text-sm sm:text-base text-gray-600">
                   Chỉ còn có {productDetail.quantity} sản phẩm
+                </span>
+              ) : (
+                <span className="text-sm sm:text-base text-red-600">
+                  Sản phẩm đã hết hàng
                 </span>
               )}
             </div>

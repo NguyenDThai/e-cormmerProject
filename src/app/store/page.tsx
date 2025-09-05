@@ -396,13 +396,17 @@ const StorePage = () => {
                               )}
                               <p
                                 className={`text-xs mt-3 font-medium ${
-                                  product.quantity > 0
+                                  product.quantity >= 5
                                     ? "text-green-600"
+                                    : product.quantity > 0
+                                    ? "text-yellow-600"
                                     : "text-red-600"
                                 }`}
                               >
-                                {product.quantity > 0
+                                {product.quantity > 5
                                   ? "🟢 Còn hàng"
+                                  : product.quantity > 0
+                                  ? "🟡 Gần hết hàng"
                                   : "🔴 Hết hàng"}
                               </p>
                             </div>
