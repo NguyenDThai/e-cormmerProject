@@ -9,8 +9,8 @@ import { StarIcon } from "lucide-react";
 interface Review {
   _id: string;
   orderId: string;
-  userId: { name: string; email: string };
-  productId: { name: string };
+  userId: { name: string; email: string } | null;
+  productId: { name: string } | null;
   rating: number;
   comment: string;
   isApproved: boolean;
@@ -93,6 +93,8 @@ const ReviewPage = () => {
     }));
   };
 
+  const reviews: Review[] = adminReviews as unknown as Review[];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
@@ -151,7 +153,7 @@ const ReviewPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {adminReviews.map((review) => (
+              {reviews.map((review) => (
                 <tr
                   key={review._id}
                   className="hover:bg-gray-50 transition-colors"
@@ -161,12 +163,14 @@ const ReviewPage = () => {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 line-clamp-1">
-                      {review.productId.name}
+                      {review.productId?.name || "Sản phẩm đã bị xóa"}
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="text-sm text-gray-900 line-clamp-1">
-                      {review.userId.name || review.userId.email}
+                      {review.userId?.name ||
+                        review.userId?.email ||
+                        "Người dùng đã bị xóa"}
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -190,7 +194,7 @@ const ReviewPage = () => {
                           !expandedComments[review._id] ? "line-clamp-2" : ""
                         }`}
                       >
-                        {review.comment}
+                        {review.comment || "Không có bình luận"}
                       </p>
                       {review.comment.length > 60 && (
                         <button
