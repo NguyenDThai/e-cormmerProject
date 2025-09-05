@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-export default function OrderConfirmation() {
+// Component con sử dụng useSearchParams
+function OrderConfirmationContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
 
@@ -128,5 +129,21 @@ export default function OrderConfirmation() {
         Quay về trang chủ
       </button>
     </div>
+  );
+}
+
+// Component chính với Suspense boundary
+export default function OrderConfirmation() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-3xl mx-auto px-6 py-10 bg-white rounded-lg shadow-md flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <p className="ml-4 text-gray-600">Đang tải thông tin đơn hàng...</p>
+        </div>
+      }
+    >
+      <OrderConfirmationContent />
+    </Suspense>
   );
 }

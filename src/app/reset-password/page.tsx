@@ -1,8 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 
-const ResetPassword = () => {
+// Component con sử dụng useSearchParams
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [message, setMessage] = useState("");
@@ -84,6 +85,22 @@ const ResetPassword = () => {
       </div>
     </div>
   );
-};
+}
 
-export default ResetPassword;
+// Component chính với Suspense boundary
+export default function ResetPassword() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden p-6 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Đang tải trang đặt lại mật khẩu...</p>
+          </div>
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
