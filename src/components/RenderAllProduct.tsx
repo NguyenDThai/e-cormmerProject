@@ -17,11 +17,13 @@ export type ProductList = [
     images: string[];
     price: number;
     salePrice: number;
+    quantity: number;
   }
 ];
 
 const RenderAllProduct = () => {
   const [productList, setProductList] = useState<ProductList | []>([]);
+
   const [displayCount, setDisplayCount] = useState(8);
   const { data: session } = useSession();
   const { activeFlashSale } = useFlashSale();
@@ -126,7 +128,10 @@ const RenderAllProduct = () => {
                 </div>
 
                 {/* Add to Cart Button */}
-                <ButtonAddToCard productId={product._id} />
+                <ButtonAddToCard
+                  productId={product._id}
+                  quanlity={product.quantity}
+                />
               </div>
             </div>
           </Link>

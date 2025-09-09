@@ -56,8 +56,10 @@ const ProductDetail = async ({
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   const productDetail = await getProductBySlug(decodedSlug);
+
   // Api loc theo loai san pham để render tất cả sản phẩm có liên quan (vd: điện thoại thì render tất cả các sản phẩm liên quan đến điện thoại)
   const categoryProduct = await relatedProduct(productDetail?.category);
+
   const reviews = await getReviewsByProduct(productDetail?._id);
 
   // Tính điểm đánh giá trung bình
@@ -142,8 +144,11 @@ const ProductDetail = async ({
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
-            <ButtonAddToCard productId={productDetail._id} />
-            <button className="w-full bg-blue-600 cursor-pointer text-white py-2 mt-4 rounded-lg hover:bg-blue-500 transition-colors duration-300 flex items-center justify-center space-x-2">
+            <ButtonAddToCard
+              productId={productDetail._id}
+              quanlity={productDetail.quantity}
+            />
+            <button className="w-full cursor-pointer text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 bg-blue-600 hover:to-purple-900 active:scale-95">
               Mua ngay
             </button>
           </div>
@@ -210,7 +215,10 @@ const ProductDetail = async ({
 
                     {/* Add to Cart Button */}
                     <div className="mt-2 sm:mt-3">
-                      <ButtonAddToCard productId={product._id.toString()} />
+                      <ButtonAddToCard
+                        productId={product._id.toString()}
+                        quanlity={product.quantity}
+                      />
                     </div>
                   </div>
                 </div>
